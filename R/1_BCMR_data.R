@@ -22,7 +22,7 @@ column_tabler <- function(x) {
 }
 
 
-### reading and reformatting data
+### reading mark-recapture data and doing some basic reformatting
 
 mark_float <- read_csv("Data/mark_float.csv") %>%
   select(which(colMeans(is.na(.)) < 1)) %>%
@@ -67,12 +67,15 @@ head(recap_hike)
 column_tabler(recap_hike)
 
 
+
+
+# making sure the column names match, then cbinding
 names(mark_float)
 names(mark_hike)
 names(recap_float)
 names(recap_hike)
 
-
+# compiling all four dataframes into one master dataset bc_all
 mark_all <- rbind(cbind(mark_float, sample="float"),
                   cbind(mark_hike, sample="hike"))
 recap_all <- rbind(cbind(recap_float, sample="float"),
@@ -82,6 +85,8 @@ bc_all <- rbind(cbind(mark_all, event="mark"),
 summary(bc_all)
 
 
+
+# Error checking
 plot(bc_all$Length)   # two lengths under 250, did we want to censor?
 head(sort(bc_all$Length))
 
@@ -104,6 +109,8 @@ bc_all %>% filter(Tag==772)
 #    + yes, censor
 # - confirm censor the ones that say "Recap?"
 #    + yes, censor
+
+# Additional data fixing per Lisa email:
 bc_all <- bc_all %>%
   filter(is.na(Length) | Length >= 250) %>%
   filter(is.na(Tag) | Tag != "Recap?")
@@ -138,7 +145,7 @@ bc_all <- bc_all %>%
   mutate(Longitude = ifelse(Longitude==-147.9976, -146.9976, Longitude)) %>%
   mutate(Longitude = ifelse(Longitude==-146.35953, -146.75953, Longitude)) %>%
   mutate(Longitude = ifelse(Longitude==-146.38034, -146.68034, Longitude))
-with(bc_all, plot(x=Longitude, y=Latitude))  # ok some serious outliers
+with(bc_all, plot(x=Longitude, y=Latitude))  # much better!
 # longitude -157.5127 might be -147.5127
 # latitude 65.72964 should be 65.32964
 # latitude 65.6534096 should be 65.34096
@@ -148,6 +155,8 @@ with(bc_all, plot(x=Longitude, y=Latitude))  # ok some serious outliers
 # longitude -146.35953 should be -146.75953 ??
 # longitude -146.38034 should be -146.68034
 
+
+# reading the .csv file with section starts/stops
 site_boundaries <- read_csv("Data/site_boundaries.csv", skip=2)[1:40,] %>%
   rename(Latitude1 = Latitude...2) %>%
   rename(Latitude2 = Latitude...4) %>%
@@ -160,7 +169,7 @@ with(site_boundaries, points(Longitude2, Latitude2, pch="x", col=2))
 with(bc_all, points(Longitude, Latitude, col=adjustcolor(1, alpha.f=.1)))
 
 
-# ok should import the river network and see how they snap
+# loading the rivernetwork to make sure that points fall close enough to river
 load(file="Data/beaver_cr_rivernetwork_op.Rdata")
 plot(beaver_cr_op)
 
@@ -177,12 +186,15 @@ points_segvert <- xy2segvert(x=points_albers[,1],
                              rivers=bc_river)
 bc_all$seg <- points_segvert$seg
 bc_all$vert <- points_segvert$vert
+
+# adding upstream position to dataset (makes distance calculations easy!)
 bc_all$upstream <- with(bc_all, mouthdist(seg=seg, vert=vert, rivers=bc_river))/1000
 
 
 plot(bc_river)
 points(sf::sf_project(pts=site_boundaries[,3:2], to=AKalbers))
 lines(sf::sf_project(pts=site_boundaries[,3:2], to=AKalbers))
+
 
 # assigning sites to point data
 # haha this is kludgy!!
