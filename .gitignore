@@ -1,0 +1,8 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.docx
+*.pdf
+*.jpg
+/raw_files

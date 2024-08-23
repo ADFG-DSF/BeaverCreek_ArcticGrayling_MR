@@ -1,0 +1,44 @@
+,,,,,,
+End of,Upstream Boundary,,Downstream Boundary,,Location,Hike or
+Site,Latitude,Longitude,Latitude,Longitude,Description,Float
+Site 1,65.3723,-146.5814,65.3592,-146.6097,above Mt. Prindle Campground,Hike
+Site 2,65.3592,-146.6097,65.3508,-146.6443,Near Quartz Creek Trail,Hike
+Site 3,65.3508,-146.6443,65.3472,-146.6856,Above Summer Creek,Hike
+Site 4,65.3472,-146.6856,65.3388,-146.7229,Below U.S. Creek Road,Hike
+Site 5,65.3388,-146.7229,65.3313,-146.7572,Above U.S. Creek Road,Hike
+Site 6,65.3313,-146.7572,65.3300,-146.7865,Near Start of Maze,Hike
+Site 7,65.3300,-146.7865,65.3359,-146.8243,Near End of Maze,Hike
+Site 8,65.3359,-146.8243,65.3356,-146.8602,Near Moose Creek,Hike
+Site 9,65.3356,-146.8602,65.3367,-146.8896,Below Moose Creek,Hike
+Site 10,65.3367,-146.8896,65.3384,-146.9168,,Hike
+Site 11,65.3384,-146.9168,65.3397,-146.9505,,Hike
+Site 12,65.3397,-146.9505,65.3400,-146.9802,Above Table Top Mountain,Hike
+Site 13,65.3400,-146.9802,65.3482,-146.9979,Across from Table Top Mountain,Hike
+Site 14,65.3482,-146.9979,65.3562,-147.0120,Below Table Top Mountain,Hike
+Site 15,65.3562,-147.0120,65.3607,-147.0307,Between Airstrip and Table Top Mountain,Hike
+Site 16,65.3607,-147.0307,65.3661,-147.0549,Above Airstrip,Hike
+Site 17,65.3661,-147.0549,65.3660,-147.0773,Near Schmidt Trail,Hike
+Site 18,65.3660,-147.0773,65.3773,-147.0926,Above Put-in Point,Hike
+Site 19,65.3773,-147.0926,65.3837,-147.1207,Below Put-in Point,Float
+Site 20,65.3837,-147.1207,65.3921,-147.1485,Nome Creek above Beaver Creek confluence,Float
+Site 21,65.3921,-147.1485,65.3922,-147.1681,Nome and Beaver Creeks above and below confluence,Float
+Site 22,65.3922,-147.1681,65.3952,-147.2028,Beaver Creek below Nome Creek,Float
+Site 23,65.3952,-147.2028,65.3923,-147.2418,Includes Roy Creek,Float
+Site 24,65.3923,-147.2418,65.3885,-147.2726,Below Roy Creek,Float
+Site 25,65.3885,-147.2726,65.3930,-147.3058,Above O'Brien Creek,Float
+Site 26,65.3930,-147.3058,65.3846,-147.3367,Above and below O'Brien Creek,Float
+Site 27,65.3846,-147.3367,65.3840,-147.3608,Below O'Brien Creek and includes Trail Creek,Float
+Site 28,65.3840,-147.3608,65.3864,-147.3761,Below Trail Creek ,Float
+Site 29,65.3864,-147.3761,65.3879,-147.3942,,Float
+Site 30,65.3879,-147.3942,65.3819,-147.4208,,Float
+Site 31,65.3819,-147.4208,65.3769,-147.4519,,Float
+Site 32,65.3769,-147.4519,65.3791,-147.4805,,Float
+Site 33,65.3791,-147.4805,65.3784,-147.5128,,Float
+Site 34,65.3784,-147.5128,65.3861,-147.5409,Above Bringham Creek,Float
+Site 35,65.3861,-147.5409,65.3844,-147.5721,Below Bringham Creek,Float
+Site 36,65.3844,-147.5721,65.3850,-147.5972,Above Unnamed Creek,Float
+Site 37,65.3850,-147.5972,65.3769,-147.6317,Includes Unnamed Creek,Float
+Site 38,65.3769,-147.6317,65.3782,-147.6562,Below Unnamed Creek,Float
+Site 39,65.3782,-147.6562,65.3818,-147.6983,,Float
+Site 40,65.3818,-147.6983,65.3790,-147.7385,Above Wickersham Creek,Float
+,,,,,End of sampling near Wickersham Creek,Float
