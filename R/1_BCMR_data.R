@@ -1,4 +1,13 @@
+## 1. Beaver Creek Mark-Recapture data
+
+## This script does all data import and data manipulation, and will be sourced
+## in subsequent scripts.
+
+
 library(tidyverse)  # for data manipulation
+library(riverdist)  # for spatial stuff with the river network
+
+
 
 # a quick & dirty function to tabulate columns
 column_tabler <- function(x) {
@@ -86,6 +95,38 @@ bc_all %>% filter(Tag==146)
 bc_all %>% filter(Tag==772)
 
 
+
+
+# Data questions for Lisa:
+# - repeat tags in both events (146 & 772)
+#    + yes, keep only one observation.  Maybe average length & longlat
+# - censor the small ones?
+#    + yes, censor
+# - confirm censor the ones that say "Recap?"
+#    + yes, censor
+bc_all <- bc_all %>%
+  filter(is.na(Length) | Length >= 250) %>%
+  filter(is.na(Tag) | Tag != "Recap?")
+
+# dealing with fish 146
+bc_all$Latitude[bc_all$Length==260 & bc_all$Tag==146 & bc_all$event=="mark"] <-
+  mean(bc_all$Latitude[bc_all$Tag==146 & bc_all$event=="mark"], na.rm=TRUE)
+bc_all$Longitude[bc_all$Length==260 & bc_all$Tag==146 & bc_all$event=="mark"] <-
+  mean(bc_all$Longitude[bc_all$Tag==146 & bc_all$event=="mark"], na.rm=TRUE)
+bc_all$Length[bc_all$Length==260 & bc_all$Tag==146 & bc_all$event=="mark"] <-
+  mean(bc_all$Length[bc_all$Tag==146 & bc_all$event=="mark"], na.rm=TRUE)
+bc_all <- bc_all[!(bc_all$Length==265 & bc_all$Tag==146 & bc_all$event=="mark"),]
+
+# dealing with fish 772
+bc_all$Latitude[bc_all$Length==362 & bc_all$Tag==772 & bc_all$event=="recap"] <-
+  mean(bc_all$Latitude[bc_all$Tag==772 & bc_all$event=="recap"], na.rm=TRUE)
+bc_all$Longitude[bc_all$Length==362 & bc_all$Tag==772 & bc_all$event=="recap"] <-
+  mean(bc_all$Longitude[bc_all$Tag==772 & bc_all$event=="recap"], na.rm=TRUE)
+bc_all$Length[bc_all$Length==362 & bc_all$Tag==772 & bc_all$event=="recap"] <-
+  mean(bc_all$Length[bc_all$Tag==772 & bc_all$event=="recap"], na.rm=TRUE)
+bc_all <- bc_all[!(bc_all$Length==370 & bc_all$Tag==772 & bc_all$event=="recap"),]
+
+
 ## quality control on coordinates (going to assign sections)
 with(bc_all, plot(x=Longitude, y=Latitude))  # ok some serious outliers
 bc_all <- bc_all %>%
@@ -120,7 +161,6 @@ with(bc_all, points(Longitude, Latitude, col=adjustcolor(1, alpha.f=.1)))
 
 
 # ok should import the river network and see how they snap
-library(riverdist)
 load(file="Data/beaver_cr_rivernetwork_op.Rdata")
 plot(beaver_cr_op)
 
@@ -157,6 +197,15 @@ bc_all %>% mutate(Site=as.factor(Site)) %>%
            geom_point()
 
 
+# separating datasets for mark, recap, and both
+bc_cap1 <- filter(bc_all, event=="mark")
+bc_cap2 <- filter(bc_all, event=="recap")
+
+# tags observed in both
+recap_tags <- bc_cap1$Tag[!is.na(bc_cap1$Tag) & bc_cap1$Tag %in% bc_cap2$Tag]
+bc_cap1_recaps <- filter(bc_cap1, Tag %in% recap_tags)
+bc_cap2_recaps <- filter(bc_cap2, Tag %in% recap_tags)
+
 ## things that will need to be checked:
 ## * immigration emigration relative magnitude
 ##   - calculate movement by recaptured indivs (range of upstream!)
@@ -165,9 +214,3 @@ bc_all %>% mutate(Site=as.factor(Site)) %>%
 ##     + might be able to get around this with summer fidelity, see what is in OP
 ## * size selectivity (chi2 I believe) - KS
 ## * spatial selectivity (also chi2) - could even KS with upstream!!
-
-
-# Data questions:
-# - repeat tags in both events (146 & 772)
-# - censor the small ones?
-# - confirm censor the ones that say Recap?
