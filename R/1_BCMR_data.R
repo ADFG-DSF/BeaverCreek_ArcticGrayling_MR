@@ -31,8 +31,8 @@ mark_float <- read_csv("Data/mark_float.csv") %>%
   rename(Fish = `Fish #`) %>%
   rename(Tag = `Mark Tag#`) %>%
   rename(Comments = `...6`)
-head(mark_float)
-column_tabler(mark_float)
+# head(mark_float)
+# column_tabler(mark_float)
 
 mark_hike <- read_csv("Data/mark_hike.csv") %>%
   select(which(colMeans(is.na(.)) < 1)) %>%
@@ -41,8 +41,8 @@ mark_hike <- read_csv("Data/mark_hike.csv") %>%
   rename(Fish = `Fish #`) %>%
   rename(Tag = `Mark Tag#`) %>%
   rename(Comments = `...6`)
-head(mark_hike)
-column_tabler(mark_hike)
+# head(mark_hike)
+# column_tabler(mark_hike)
 
 
 recap_float <- read_csv("Data/recap_float.csv") %>%
@@ -52,8 +52,8 @@ recap_float <- read_csv("Data/recap_float.csv") %>%
   rename(Fish = `Fish #`) %>%
   rename(Tag = `Recap Tag#`) %>%
   rename(Comments = `...6`)
-head(recap_float)
-column_tabler(recap_float)
+# head(recap_float)
+# column_tabler(recap_float)
 
 
 recap_hike <- read_csv("Data/recap_hike.csv") %>%
@@ -63,8 +63,8 @@ recap_hike <- read_csv("Data/recap_hike.csv") %>%
   rename(Fish = `Fish #`) %>%
   rename(Tag = `Recap Tag#`) %>%
   rename(Comments = `...6`)
-head(recap_hike)
-column_tabler(recap_hike)
+# head(recap_hike)
+# column_tabler(recap_hike)
 
 
 
@@ -91,7 +91,7 @@ plot(bc_all$Length)   # two lengths under 250, did we want to censor?
 head(sort(bc_all$Length))
 
 tagtab <- table(bc_all$Tag, bc_all$event)
-tagtab
+# tagtab
 tagtab[tagtab[,1]>1 | tagtab[,2]>1,]
 # tag 146 recorded twice (mark float)
 # tag 772 recorded three times (recap hike)
@@ -134,7 +134,7 @@ bc_all$Length[bc_all$Length==362 & bc_all$Tag==772 & bc_all$event=="recap"] <-
 bc_all <- bc_all[!(bc_all$Length==370 & bc_all$Tag==772 & bc_all$event=="recap"),]
 
 
-## quality control on coordinates (going to assign sections)
+## quality control on coordinates (will use coords to assign sections)
 with(bc_all, plot(x=Longitude, y=Latitude))  # ok some serious outliers
 bc_all <- bc_all %>%
   mutate(Longitude = ifelse(Longitude < -150, Longitude+10, Longitude)) %>%
@@ -146,14 +146,8 @@ bc_all <- bc_all %>%
   mutate(Longitude = ifelse(Longitude==-146.35953, -146.75953, Longitude)) %>%
   mutate(Longitude = ifelse(Longitude==-146.38034, -146.68034, Longitude))
 with(bc_all, plot(x=Longitude, y=Latitude))  # much better!
-# longitude -157.5127 might be -147.5127
-# latitude 65.72964 should be 65.32964
-# latitude 65.6534096 should be 65.34096
-# longitude -147.969616 should be -147.69616
-# longitude -147.95062 should be -146.95062
-# longitude -147.9976 should be -146.9976
-# longitude -146.35953 should be -146.75953 ??
-# longitude -146.38034 should be -146.68034
+
+
 
 
 # reading the .csv file with section starts/stops
@@ -173,14 +167,19 @@ with(bc_all, points(Longitude, Latitude, col=adjustcolor(1, alpha.f=.1)))
 load(file="Data/beaver_cr_rivernetwork_op.Rdata")
 plot(beaver_cr_op)
 
+# reprojecting data locations to the same coord system as rivernetwork
 AKalbers <- "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154
     +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80"
 points_albers <- sf::sf_project(pts=bc_all[,3:2], to=AKalbers)
 points(points_albers, pch=16, col=2)
+
+# simplifying rivernetwork
 bc_river <- trimriver(rivers=beaver_cr_op, trimto=c(5:8,13:16))
 bc_river <- setmouth(seg=8, vert=211, rivers=bc_river)
 plot(bc_river)
 points(points_albers)
+
+# snapping river coordinates
 points_segvert <- xy2segvert(x=points_albers[,1],
                              y=points_albers[,2],
                              rivers=bc_river)
@@ -196,7 +195,7 @@ points(sf::sf_project(pts=site_boundaries[,3:2], to=AKalbers))
 lines(sf::sf_project(pts=site_boundaries[,3:2], to=AKalbers))
 
 
-# assigning sites to point data
+# assigning sites (sections of river network) to point data
 # haha this is kludgy!!
 bc_all$Site <- NA
 for(i in 1:nrow(site_boundaries)) {
@@ -217,6 +216,13 @@ bc_cap2 <- filter(bc_all, event=="recap")
 recap_tags <- bc_cap1$Tag[!is.na(bc_cap1$Tag) & bc_cap1$Tag %in% bc_cap2$Tag]
 bc_cap1_recaps <- filter(bc_cap1, Tag %in% recap_tags)
 bc_cap2_recaps <- filter(bc_cap2, Tag %in% recap_tags)
+
+
+### MAKE SURE FINAL CALCS INCLUDE NON-NUMBERED FISH
+### - Tag = "Recap"
+### - Tag = "none"
+
+
 
 ## things that will need to be checked:
 ## * immigration emigration relative magnitude

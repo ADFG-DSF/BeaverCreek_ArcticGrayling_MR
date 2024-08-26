@@ -17,9 +17,13 @@ ks.test(bc_cap1$Length, bc_cap1_recaps$Length)  # cap vs recap for first event
 # evidence of size selectivity in second event
 
 par(mfrow=c(2,2))
-plot(density(bc_cap1$Length, na.rm=T))
+plot(density(bc_cap1$Length, na.rm=T),
+     main="Event 1: All vs Recaptures", xlab="")
+legend("topright", lty=1, col=c(1,2), legend=c("All","Recaps"))
 lines(density(bc_cap1_recaps$Length, na.rm=T), col=2)
-plot(ecdf(bc_cap1$Length))
+plot(ecdf(bc_cap1$Length),
+     main="Event 1: All vs Recaptures", xlab="")
+legend("bottomright", lty=1, col=c(1,2), legend=c("All","Recaps"))
 plot(ecdf(bc_cap1_recaps$Length), add=T, col=2)
 
 
@@ -27,10 +31,44 @@ ks.test(bc_cap2$Length, bc_cap2_recaps$Length)  # cap vs recap for second event
 # D = 0.16438, p-value = 0.002293
 # evidence of size selectivity in first event
 
-plot(density(bc_cap2$Length, na.rm=T))
+plot(density(bc_cap2$Length, na.rm=T),
+     main="Event 2: All vs Recaptures", xlab="")
+legend("topright", lty=1, col=c(1,4), legend=c("All","Recaps"))
 lines(density(bc_cap2_recaps$Length, na.rm=T), col=4)
-plot(ecdf(bc_cap2$Length))
+plot(ecdf(bc_cap2$Length),
+     main="Event 2: All vs Recaptures", xlab="")
+legend("bottomright", lty=1, col=c(1,4), legend=c("All","Recaps"))
 plot(ecdf(bc_cap2_recaps$Length), add=T, col=4)
+
+
+# actually very curious how cap-cap and recap-recap compare
+ks.test(bc_cap1$Length, bc_cap2$Length)  # cap for first event vs cap for second
+# D = 0.057789, p-value = 0.03195
+
+plot(density(bc_cap1$Length, na.rm=T),
+     main="Event 1 All vs Event 2 All", xlab="")
+legend("topright", lty=c(1,2), legend=c("Event 1", "Event 2"))
+lines(density(bc_cap2$Length, na.rm=T), lty=2)
+plot(ecdf(bc_cap1$Length),
+     main="Event 1 All vs Event 2 All", xlab="")
+legend("bottomright", lty=c(1,2), legend=c("Event 1", "Event 2"))
+plot(ecdf(bc_cap2$Length), add=T, lty=2)
+
+
+ks.test(bc_cap1_recaps$Length, bc_cap2_recaps$Length)  # recap for first event vs recap for second
+# D = 0.051852, p-value = 0.9934
+
+plot(density(bc_cap1_recaps$Length, na.rm=T),
+     main="Event 1 Recaps vs Event 2 Recaps", xlab="", col=2)
+legend("topright", col=c(2,4), legend=c("Event 1", "Event 2"))
+lines(density(bc_cap2_recaps$Length, na.rm=T), col=4)
+plot(ecdf(bc_cap1_recaps$Length), col=2,
+     main="Event 1 Recaps vs Event 2 Recaps", xlab="")
+legend("bottomright", col=c(2,4), lty=1, legend=c("Event 1", "Event 2"))
+plot(ecdf(bc_cap2_recaps$Length), add=T, col=4)
+
+
+
 
 
 # what happens at various breakpoints - all tests satisfied at 270
@@ -49,11 +87,19 @@ for(breakpt in possiblebreaks) {
           bc_cap2_recaps$Length[bc_cap2_recaps$Length >= breakpt])$p.value
   i <- i+1
 }
-plot(possiblebreaks, p1, ylim=range(p1,p2,p3,p4), type='l', log="y", col=2)
+par(mfrow=c(1,1))
+plot(possiblebreaks, p1, ylim=range(p1,p2,p3,p4), type='l', log="y", col=2,
+     xlab="possible length breakpoints", ylab="p-value")
 lines(possiblebreaks, p2, col=3)
 lines(possiblebreaks, p3, col=4)
 lines(possiblebreaks, p4, col=5)
-abline(h=.05)
+abline(h=.05, lty=2)
+text(x=min(possiblebreaks), y=0.05, labels="0.05", pos=3)
+legend("topright",lty=1, col=2:5,
+       legend=c("Event 1 All vs Recaps - small fish",
+                "Event 2 All vs Recaps - small fish",
+                "Event 1 All vs Recaps - large fish",
+                "Event 2 All vs Recaps - large fish"))
 
 
 ## trying a break at 270
