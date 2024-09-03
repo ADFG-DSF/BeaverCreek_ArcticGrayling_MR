@@ -11,61 +11,95 @@ source("R/1_BCMR_data.R")
 
 ## --------------- length selectivity ------------------ ##
 
-# KS tests for size selectivity
-ks.test(bc_cap1$Length, bc_cap1_recaps$Length)  # cap vs recap for first event
-# D = 0.1758, p-value = 0.001329
-# evidence of size selectivity in second event
+## defining a function to illustrate differences in distribution, with ks test
+ksplot <- function(x1, x2, legend=c("x1","x2"), main="", col=c(1,1), lty=c(1,1)) {
+  d1 <- density(x1, na.rm=TRUE)
+  d2 <- density(x2, na.rm=TRUE)
+  plot(d1, main=main, xlab="", col=col[1], lty=lty[1],
+       xlim=range(d1$x, d2$x), ylim=range(d1$y, d2$y))
+  lines(density(x2, na.rm=TRUE), col=col[2], lty=lty[2])
+  legend("topright", lty=lty, col=col,
+         legend=paste0(legend, " (n=",c(sum(!is.na(x1)), sum(!is.na(x2))),")"))
+
+  ksks <- suppressWarnings(ks.test(x1, x2))
+  plot(ecdf(x1), main=c(main,
+                        paste0("D=", signif(ksks$statistic, digits=3), ", ",
+                        "pval=", signif(ksks$p.value, digits=3), collapse=NULL)),
+       col=col[1], lty=lty[1])
+  plot(ecdf(x2), col=col[2], lty=lty[2], add=TRUE)
+  legend("bottomright", lty=lty, col=col,
+         legend=paste0(legend, " (n=",c(sum(!is.na(x1)), sum(!is.na(x2))),")"))
+}
+
+# # KS tests for size selectivity
+# ks.test(bc_cap1$Length, bc_cap1_recaps$Length)  # cap vs recap for first event
+# # D = 0.1758, p-value = 0.001329
+# # evidence of size selectivity in second event
+#
+# # ksplot(x1=bc_cap1$Length, x2=bc_cap1_recaps$Length,
+# #        main="Event 1", legend=c("All","Recaps"), col=c(1,2))
 
 par(mfrow=c(2,2))
-plot(density(bc_cap1$Length, na.rm=T),
-     main="Event 1: All vs Recaptures", xlab="")
-legend("topright", lty=1, col=c(1,2), legend=c("All","Recaps"))
-lines(density(bc_cap1_recaps$Length, na.rm=T), col=2)
-plot(ecdf(bc_cap1$Length),
-     main="Event 1: All vs Recaptures", xlab="")
-legend("bottomright", lty=1, col=c(1,2), legend=c("All","Recaps"))
-plot(ecdf(bc_cap1_recaps$Length), add=T, col=2)
+ksplot(x1=bc_cap1$Length, x2=bc_cap1_recaps$Length,
+       main="Event 1", legend=c("All","Recaps"), col=c(1,2))
+ksplot(x1=bc_cap2$Length, x2=bc_cap2_recaps$Length,
+       main="Event 2", legend=c("All","Recaps"), col=c(1,4))
+
+# plot(density(bc_cap1$Length, na.rm=T),
+#      main="Event 1: All vs Recaptures", xlab="")
+# legend("topright", lty=1, col=c(1,2), legend=c("All","Recaps"))
+# lines(density(bc_cap1_recaps$Length, na.rm=T), col=2)
+# plot(ecdf(bc_cap1$Length),
+#      main="Event 1: All vs Recaptures", xlab="")
+# legend("bottomright", lty=1, col=c(1,2), legend=c("All","Recaps"))
+# plot(ecdf(bc_cap1_recaps$Length), add=T, col=2)
 
 
-ks.test(bc_cap2$Length, bc_cap2_recaps$Length)  # cap vs recap for second event
-# D = 0.16438, p-value = 0.002293
-# evidence of size selectivity in first event
-
-plot(density(bc_cap2$Length, na.rm=T),
-     main="Event 2: All vs Recaptures", xlab="")
-legend("topright", lty=1, col=c(1,4), legend=c("All","Recaps"))
-lines(density(bc_cap2_recaps$Length, na.rm=T), col=4)
-plot(ecdf(bc_cap2$Length),
-     main="Event 2: All vs Recaptures", xlab="")
-legend("bottomright", lty=1, col=c(1,4), legend=c("All","Recaps"))
-plot(ecdf(bc_cap2_recaps$Length), add=T, col=4)
+# ks.test(bc_cap2$Length, bc_cap2_recaps$Length)  # cap vs recap for second event
+# # D = 0.16438, p-value = 0.002293
+# # evidence of size selectivity in first event
+#
+# plot(density(bc_cap2$Length, na.rm=T),
+#      main="Event 2: All vs Recaptures", xlab="")
+# legend("topright", lty=1, col=c(1,4), legend=c("All","Recaps"))
+# lines(density(bc_cap2_recaps$Length, na.rm=T), col=4)
+# plot(ecdf(bc_cap2$Length),
+#      main="Event 2: All vs Recaptures", xlab="")
+# legend("bottomright", lty=1, col=c(1,4), legend=c("All","Recaps"))
+# plot(ecdf(bc_cap2_recaps$Length), add=T, col=4)
 
 
 # actually very curious how cap-cap and recap-recap compare
-ks.test(bc_cap1$Length, bc_cap2$Length)  # cap for first event vs cap for second
+par(mfrow=c(2,2))
+ksplot(x1=bc_cap1$Length, x2=bc_cap2$Length,
+       main="All Captures", legend=c("Event 1","Event 2"), lty=c(1,2))
+ksplot(x1=bc_cap1_recaps$Length, x2=bc_cap2_recaps$Length,
+       main="Recaptures", legend=c("Event 1","Event 2"), col=c(2,4))
+
+# ks.test(bc_cap1$Length, bc_cap2$Length)  # cap for first event vs cap for second
 # D = 0.057789, p-value = 0.03195
 
-plot(density(bc_cap1$Length, na.rm=T),
-     main="Event 1 All vs Event 2 All", xlab="")
-legend("topright", lty=c(1,2), legend=c("Event 1", "Event 2"))
-lines(density(bc_cap2$Length, na.rm=T), lty=2)
-plot(ecdf(bc_cap1$Length),
-     main="Event 1 All vs Event 2 All", xlab="")
-legend("bottomright", lty=c(1,2), legend=c("Event 1", "Event 2"))
-plot(ecdf(bc_cap2$Length), add=T, lty=2)
-
-
-ks.test(bc_cap1_recaps$Length, bc_cap2_recaps$Length)  # recap for first event vs recap for second
-# D = 0.051852, p-value = 0.9934
-
-plot(density(bc_cap1_recaps$Length, na.rm=T),
-     main="Event 1 Recaps vs Event 2 Recaps", xlab="", col=2)
-legend("topright", col=c(2,4), legend=c("Event 1", "Event 2"))
-lines(density(bc_cap2_recaps$Length, na.rm=T), col=4)
-plot(ecdf(bc_cap1_recaps$Length), col=2,
-     main="Event 1 Recaps vs Event 2 Recaps", xlab="")
-legend("bottomright", col=c(2,4), lty=1, legend=c("Event 1", "Event 2"))
-plot(ecdf(bc_cap2_recaps$Length), add=T, col=4)
+# plot(density(bc_cap1$Length, na.rm=T),
+#      main="Event 1 All vs Event 2 All", xlab="")
+# legend("topright", lty=c(1,2), legend=c("Event 1", "Event 2"))
+# lines(density(bc_cap2$Length, na.rm=T), lty=2)
+# plot(ecdf(bc_cap1$Length),
+#      main="Event 1 All vs Event 2 All", xlab="")
+# legend("bottomright", lty=c(1,2), legend=c("Event 1", "Event 2"))
+# plot(ecdf(bc_cap2$Length), add=T, lty=2)
+#
+#
+# ks.test(bc_cap1_recaps$Length, bc_cap2_recaps$Length)  # recap for first event vs recap for second
+# # D = 0.051852, p-value = 0.9934
+#
+# plot(density(bc_cap1_recaps$Length, na.rm=T),
+#      main="Event 1 Recaps vs Event 2 Recaps", xlab="", col=2)
+# legend("topright", col=c(2,4), legend=c("Event 1", "Event 2"))
+# lines(density(bc_cap2_recaps$Length, na.rm=T), col=4)
+# plot(ecdf(bc_cap1_recaps$Length), col=2,
+#      main="Event 1 Recaps vs Event 2 Recaps", xlab="")
+# legend("bottomright", col=c(2,4), lty=1, legend=c("Event 1", "Event 2"))
+# plot(ecdf(bc_cap2_recaps$Length), add=T, col=4)
 
 
 
@@ -107,32 +141,45 @@ legend("topright",lty=1, col=2:5,
 sum(bc_cap1_recaps$Length < 270)
 sum(bc_cap2_recaps$Length < 270)
 
+
+
 par(mfrow=c(2,2))
-plot(density(bc_cap1$Length[bc_cap1$Length < 270], na.rm=T))
-lines(density(bc_cap1_recaps$Length[bc_cap1_recaps$Length < 270], na.rm=T), col=2)
-plot(ecdf(bc_cap1$Length[bc_cap1$Length < 270]))
-plot(ecdf(bc_cap1_recaps$Length[bc_cap1_recaps$Length < 270]), add=T, col=2)
+ksplot(x1=bc_cap1$Length %s_l% 270, x2=bc_cap1_recaps$Length %s_l% 270,
+       main="Event 1, lengths < 270mm", legend=c("All","Recaps"), col=c(1,2))
+ksplot(x1=bc_cap2$Length %s_l% 270, x2=bc_cap2_recaps$Length %s_l% 270,
+       main="Event 2, lengths < 270mm", legend=c("All","Recaps"), col=c(1,4))
 
-plot(density(bc_cap2$Length[bc_cap2$Length < 270], na.rm=T))
-lines(density(bc_cap2_recaps$Length[bc_cap2_recaps$Length < 270], na.rm=T), col=4)
-plot(ecdf(bc_cap2$Length[bc_cap2$Length < 270]))
-plot(ecdf(bc_cap2_recaps$Length[bc_cap2_recaps$Length < 270]), add=T, col=4)
+ksplot(x1=bc_cap1$Length %s_geq% 270, x2=bc_cap1_recaps$Length %s_geq% 270,
+       main="Event 1, lengths >= 270mm", legend=c("All","Recaps"), col=c(1,2))
+ksplot(x1=bc_cap2$Length %s_geq% 270, x2=bc_cap2_recaps$Length %s_geq% 270,
+       main="Event 2, lengths >= 270mm", legend=c("All","Recaps"), col=c(1,4))
 
-plot(density(bc_cap1$Length[bc_cap1$Length >= 270], na.rm=T))
-lines(density(bc_cap1_recaps$Length[bc_cap1_recaps$Length >= 270], na.rm=T), col=2)
-plot(ecdf(bc_cap1$Length[bc_cap1$Length >= 270]))
-plot(ecdf(bc_cap1_recaps$Length[bc_cap1_recaps$Length >= 270]), add=T, col=2)
-
-plot(density(bc_cap2$Length[bc_cap2$Length >= 270], na.rm=T))
-lines(density(bc_cap2_recaps$Length[bc_cap2_recaps$Length >= 270], na.rm=T), col=4)
-plot(ecdf(bc_cap2$Length[bc_cap2$Length >= 270]))
-plot(ecdf(bc_cap2_recaps$Length[bc_cap2_recaps$Length >= 270]), add=T, col=4)
+# par(mfrow=c(2,2))
+# plot(density(bc_cap1$Length[bc_cap1$Length < 270], na.rm=T))
+# lines(density(bc_cap1_recaps$Length[bc_cap1_recaps$Length < 270], na.rm=T), col=2)
+# plot(ecdf(bc_cap1$Length[bc_cap1$Length < 270]))
+# plot(ecdf(bc_cap1_recaps$Length[bc_cap1_recaps$Length < 270]), add=T, col=2)
+#
+# plot(density(bc_cap2$Length[bc_cap2$Length < 270], na.rm=T))
+# lines(density(bc_cap2_recaps$Length[bc_cap2_recaps$Length < 270], na.rm=T), col=4)
+# plot(ecdf(bc_cap2$Length[bc_cap2$Length < 270]))
+# plot(ecdf(bc_cap2_recaps$Length[bc_cap2_recaps$Length < 270]), add=T, col=4)
+#
+# plot(density(bc_cap1$Length[bc_cap1$Length >= 270], na.rm=T))
+# lines(density(bc_cap1_recaps$Length[bc_cap1_recaps$Length >= 270], na.rm=T), col=2)
+# plot(ecdf(bc_cap1$Length[bc_cap1$Length >= 270]))
+# plot(ecdf(bc_cap1_recaps$Length[bc_cap1_recaps$Length >= 270]), add=T, col=2)
+#
+# plot(density(bc_cap2$Length[bc_cap2$Length >= 270], na.rm=T))
+# lines(density(bc_cap2_recaps$Length[bc_cap2_recaps$Length >= 270], na.rm=T), col=4)
+# plot(ecdf(bc_cap2$Length[bc_cap2$Length >= 270]))
+# plot(ecdf(bc_cap2_recaps$Length[bc_cap2_recaps$Length >= 270]), add=T, col=4)
 
 
 ## trying breaks at 270 and 300
 ## tests fail for 300-500 but not 270-500!  i hate ks tests
 
-breaks <- c(250, 270, 500)# , 300
+breaks <- c(250, 270, 500, 300)#
 bc_cap1$Lengthbin <- cut(bc_cap1$Length, breaks, right=FALSE)
 bc_cap2$Lengthbin <- cut(bc_cap2$Length, breaks, right=FALSE)
 bc_cap1_recaps$Lengthbin <- cut(bc_cap1_recaps$Length, breaks, right=FALSE)
@@ -143,32 +190,102 @@ for(i in 1:(length(breaks)-1)) {
   x3 <- bc_cap2$Length[as.numeric(bc_cap2$Lengthbin) == i]
   x4 <- bc_cap2_recaps$Length[as.numeric(bc_cap2_recaps$Lengthbin) == i]
 
-  print(ks.test(x1, x2))  # cap vs recap for first event
+  # print(ks.test(x1, x2))  # cap vs recap for first event
+  #
+  # par(mfrow=c(2,2))
+  # plot(density(x1, na.rm=T))
+  # lines(density(x2, na.rm=T), col=2)
+  # plot(ecdf(x1))
+  # plot(ecdf(x2), add=T, col=2)
+  #
+  # print(ks.test(x3, x4))  # cap vs recap for first event
+  #
+  # plot(density(x3, na.rm=T))
+  # lines(density(x4, na.rm=T), col=4)
+  # plot(ecdf(x3))
+  # plot(ecdf(x4), add=T, col=4)
 
   par(mfrow=c(2,2))
-  plot(density(x1, na.rm=T))
-  lines(density(x2, na.rm=T), col=2)
-  plot(ecdf(x1))
-  plot(ecdf(x2), add=T, col=2)
-
-  print(ks.test(x3, x4))  # cap vs recap for first event
-
-  plot(density(x3, na.rm=T))
-  lines(density(x4, na.rm=T), col=4)
-  plot(ecdf(x3))
-  plot(ecdf(x4), add=T, col=4)
+  ksplot(x1=x1, x2=x2,
+         main=paste("Event 1,", levels(bc_cap1$Lengthbin)[i]),
+         legend=c("All","Recaps"), col=c(1,2))
+  ksplot(x1=x3, x2=x4,
+         main=paste("Event 2,", levels(bc_cap1$Lengthbin)[i]),
+         legend=c("All","Recaps"), col=c(1,4))
 }
 
 
 ## -------------- spatial selectivity? ---------------- ##
 ks.test(bc_cap1$upstream, bc_cap1_recaps$upstream)
 # D = 0.22825, p-value = 8.778e-06
+ksplot(bc_cap1$upstream, bc_cap1_recaps$upstream,
+       main="Event 1", legend=c("All","Recaps"), col=c(1,2))
 
 ks.test(bc_cap2$upstream, bc_cap2_recaps$upstream)
 # D = 0.49899, p-value < 2.2e-16
+ksplot(bc_cap2$upstream, bc_cap2_recaps$upstream,
+       main="Event 2", legend=c("All","Recaps"), col=c(1,4))
+
 
 ## actually I don't think we need to worry about this one
+### actually yes we do!!  This suggests much more fish in the lower river
+### might even be float vs hike!   - IT IS, KEEP THIS STRATIFICATION!!!
+par(mfrow=c(2,2))
+ks.test(bc_cap1$upstream[bc_cap1$sample=="float"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="float"])
+# D = 0.13742, p-value = 0.428
+ksplot(bc_cap1$upstream[bc_cap1$sample=="float"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="float"],
+       main="Event 1 - float", legend=c("All","Recaps"), col=c(1,2))
 
+ks.test(bc_cap2$upstream[bc_cap2$sample=="float"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="float"])
+# D = 0.1145, p-value = 0.6445
+ksplot(bc_cap2$upstream[bc_cap2$sample=="float"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="float"],
+       main="Event 2 - float", legend=c("All","Recaps"), col=c(1,4))
+
+par(mfrow=c(2,2))
+ks.test(bc_cap1$upstream[bc_cap1$sample=="hike"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="hike"])
+# D = 0.11804, p-value = 0.2432
+ksplot(bc_cap1$upstream[bc_cap1$sample=="hike"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="hike"],
+       main="Event 1 - hike", legend=c("All","Recaps"), col=c(1,2))
+
+ks.test(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="hike"])
+# D = 0.11701, p-value = 0.2823
+ksplot(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="hike"],
+       main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4))
+
+
+## checking to see if there is still length selectivity detected after stratifying by sample
+### THIS ACCOUNTS FOR MUCH OF THE LENGTH SELECTIVITY!!!
+par(mfrow=c(2,2))
+ks.test(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"])
+# D = 0.10712, p-value = 0.7409
+ksplot(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"],
+       main="Event 1 - float", legend=c("All","Recaps"), col=c(1,2))
+
+ks.test(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"])
+# D = 0.075859, p-value = 0.9699
+ksplot(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"],
+       main="Event 2 - float", legend=c("All","Recaps"), col=c(1,4))
+
+par(mfrow=c(2,2))
+ks.test(bc_cap1$Length[bc_cap1$sample=="hike"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"])
+# D = 0.14723, p-value = 0.07561
+ksplot(bc_cap1$Length[bc_cap1$sample=="hike"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"],
+       main="Event 1 - hike", legend=c("All","Recaps"), col=c(1,2))
+
+ks.test(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"])
+# D = 0.137, p-value = 0.1373
+ksplot(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"],
+       main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4))
+
+## curious to see how samples compare
+ksplot(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1$Length[bc_cap1$sample=="hike"],
+       main="Event 1 - all", legend=c("float","hike"), lty=c(1,2))
+ksplot(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2$Length[bc_cap2$sample=="hike"],
+       main="Event 2 - all", legend=c("float","hike"), lty=c(1,2))
+ksplot(bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"],
+       main="Event 1 - recaps", legend=c("float","hike"), col=c(2,4))
+ksplot(bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"],
+       main="Event 2 - recaps", legend=c("float","hike"), col=c(2,4))
 
 
 
@@ -182,13 +299,29 @@ bc_cap2_recaps$Tag[order(bc_cap2_recaps$Tag)]
 
 plot(length2 - length1)
 plot(length2 - length1,
-     col=1+as.numeric(as.factor((paste(bc_cap1_recaps$event, bc_cap1_recaps$sample))[order(bc_cap1_recaps$Tag)])))
+     col=1+as.numeric(as.factor((paste(bc_cap1_recaps$event,
+                                       bc_cap1_recaps$sample))[order(bc_cap1_recaps$Tag)])))
 plot(length2 - length1,
-     col=1+as.numeric(as.factor((paste(bc_cap2_recaps$event, bc_cap2_recaps$sample))[order(bc_cap2_recaps$Tag)])))
+     col=1+as.numeric(as.factor((paste(bc_cap2_recaps$event,
+                                       bc_cap2_recaps$sample))[order(bc_cap2_recaps$Tag)])))
 median(length2-length1)
 sd(length2-length1)
 t.test(length2-length1)
 
+# table combination of float/hike mark/recap, then plot diffs
+recaps <- data.frame(Tag = bc_cap1_recaps$Tag[order(bc_cap1_recaps$Tag)],
+                     length1 = bc_cap1_recaps$Length[order(bc_cap1_recaps$Tag)],
+                     length2 = bc_cap2_recaps$Length[order(bc_cap2_recaps$Tag)],
+                     sample1 = bc_cap1_recaps$sample[order(bc_cap1_recaps$Tag)],
+                     sample2 = bc_cap2_recaps$sample[order(bc_cap2_recaps$Tag)])
+recaps$diff <- recaps$length2 - recaps$length1
+table(recaps$sample1, recaps$sample2)
+recaps %>%
+  ggplot(aes(y=diff, x=seq_along(diff),col=sample1)) +
+  geom_point()
+recaps %>%
+  ggplot(aes(y=diff, x=sample1)) +
+  geom_boxplot()
 
 
 
@@ -199,3 +332,6 @@ plot(up2-up1)
 sd(up2-up1)
 mean(abs(up2-up1))
 median(abs(up2-up1))
+mean(abs(up2-up1)>.5)
+par(mfrow=c(1,1))
+plot(ecdf(abs(up2-up1)), xlim=c(0,5))

@@ -6,7 +6,7 @@
 
 library(tidyverse)  # for data manipulation
 library(riverdist)  # for spatial stuff with the river network
-
+library(dsftools)   # for some data manipulation stuff
 
 
 # a quick & dirty function to tabulate columns
