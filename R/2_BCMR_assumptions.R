@@ -277,6 +277,7 @@ ks.test(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_re
 ksplot(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"],
        main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4))
 
+
 ## curious to see how samples compare
 ksplot(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1$Length[bc_cap1$sample=="hike"],
        main="Event 1 - all", legend=c("float","hike"), lty=c(1,2))
@@ -313,9 +314,12 @@ recaps <- data.frame(Tag = bc_cap1_recaps$Tag[order(bc_cap1_recaps$Tag)],
                      length1 = bc_cap1_recaps$Length[order(bc_cap1_recaps$Tag)],
                      length2 = bc_cap2_recaps$Length[order(bc_cap2_recaps$Tag)],
                      sample1 = bc_cap1_recaps$sample[order(bc_cap1_recaps$Tag)],
-                     sample2 = bc_cap2_recaps$sample[order(bc_cap2_recaps$Tag)])
+                     sample2 = bc_cap2_recaps$sample[order(bc_cap2_recaps$Tag)],
+                     upstream1 = bc_cap1_recaps$upstream[order(bc_cap1_recaps$Tag)],
+                     upstream2 = bc_cap2_recaps$upstream[order(bc_cap2_recaps$Tag)])
 recaps$diff <- recaps$length2 - recaps$length1
 table(recaps$sample1, recaps$sample2)
+par(mfrow=c(1,1))
 recaps %>%
   ggplot(aes(y=diff, x=seq_along(diff),col=sample1)) +
   geom_point()
@@ -328,10 +332,60 @@ recaps %>%
 ## ----------------- movement in/out? ------------------ ##
 up1 <- bc_cap1_recaps$upstream[order(bc_cap1_recaps$Tag)]
 up2 <- bc_cap2_recaps$upstream[order(bc_cap2_recaps$Tag)]
-plot(up2-up1)
-sd(up2-up1)
-mean(abs(up2-up1))
-median(abs(up2-up1))
-mean(abs(up2-up1)>.5)
+diffs <- up2-up1
+plot(diffs)
+sd(diffs)
+mean(abs(diffs))
+median(abs(diffs))
+mean(abs(diffs)>.5)
 par(mfrow=c(1,1))
-plot(ecdf(abs(up2-up1)), xlim=c(0,5))
+plot(ecdf(abs(diffs)), xlim=c(0,5))
+
+plot(x=up1, y=diffs)
+plot(x=up2, y=diffs)  # hardly any fish near endpoints, it's probably just fine
+
+# try resampling distances and adding them to all capture locations to see how
+# inferences are affected
+# at the very least, I can see what happens to the tagged population subject to recapture:
+
+nboot <- 1000
+count_table <- matrix(nrow=nboot, ncol=4)
+for(i in 1:nboot) {
+  upstream_boot <- bc_cap1$upstream + sample(diffs, size=nrow(bc_cap1), replace=TRUE)
+  # table(cut(upstream_boot,
+  #           c(-100, 0, 42.81, 82.52, 200)))
+  #           # levels=c("(-100,0]",   " (0,42.8]", "(42.8,82.5]",  "(82.5,200])")))
+  count_table[i,1] <- sum(upstream_boot <= 0)
+  count_table[i,2] <- length(upstream_boot %s_inside(]% c(0, 42.81))
+  count_table[i,3] <- length(upstream_boot %s_inside(]% c(42.81, 82.5))
+  count_table[i,4] <- sum(upstream_boot > 82.5)
+}
+prop_table <- count_table/nrow(bc_cap1)
+colMeans(prop_table)
+# we might lose 1% of tagged fish out the bottom, and the top is negligible
+
+
+
+## will make this its own file
+# figure out where the hike/float break is
+# make the fish that was captured in both one or the other
+tapply(bc_cap1_recaps$upstream, bc_cap1_recaps$sample, summary)
+tapply(bc_cap2_recaps$upstream, bc_cap2_recaps$sample, summary)
+cumsum(rev(bc_river$lengths))/1000  # break at upstream dist of 42.81
+
+subset(recaps, sample1 != sample2)
+# Tag 515
+# a little further into float, make it a float (or maybe try both)
+recaps$sample1[recaps$Tag == 515] <- recaps$sample2[recaps$Tag == 515] <- "float"
+
+m2 <- table(recaps$sample1)
+n1 <- table(bc_cap1$sample)
+n2 <- table(bc_cap2$sample)
+
+library(recapr)
+NBailey(n1=n1, n2=n2, m2=m2)
+seBailey(n1=n1, n2=n2, m2=m2)
+
+seBailey(n1=n1, n2=n2, m2=m2)/NBailey(n1=n1, n2=n2, m2=m2)
+
+# investigate the possibility of movement at ends & between strata?  simulate somehow
