@@ -6,7 +6,7 @@
 
 library(tidyverse)  # for data manipulation
 library(riverdist)  # for spatial stuff with the river network
-library(dsftools)   # for some data manipulation stuff
+library(dsftools)   # for some data manipulation stuff and ASL summaries
 
 
 # a quick & dirty function to tabulate columns
@@ -215,7 +215,8 @@ bc_cap2 <- filter(bc_all, event=="recap")
 # tags observed in both
 recap_tags <- bc_cap1$Tag[!is.na(bc_cap1$Tag) & bc_cap1$Tag %in% bc_cap2$Tag]
 bc_cap1_recaps <- filter(bc_cap1, Tag %in% recap_tags)
-bc_cap2_recaps <- filter(bc_cap2, Tag %in% recap_tags)
+bc_cap2_recaps_justtags <- filter(bc_cap2, Tag %in% recap_tags)
+bc_cap2_recaps <- filter(bc_cap2, Tag %in% c(recap_tags, "Recap"))
 
 
 ### MAKE SURE FINAL CALCS INCLUDE NON-NUMBERED FISH
