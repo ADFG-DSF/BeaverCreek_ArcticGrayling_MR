@@ -1,0 +1,381 @@
+---
+title: "Beaver Creek Mark-Recapture Output"
+author: "Matt Tyers"
+date: "2024-09-09"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.width = 10, fig.height = 7, dpi=300,
+                      warning=FALSE, message=FALSE)
+```
+
+```{r fig.show='hide'}
+source("R/1_BCMR_data.R")
+
+# doing this with the object that will be used to tally!
+bc_cap2_recaps$sample[bc_cap2_recaps$Tag == 515] <- "float"
+
+
+n1 <- table(bc_cap1$sample)    # this should work
+n2 <- table(bc_cap2$sample)    # this should work
+# m2 <- table(recaps$sample1)    # wrong, there are Recap $Tag's in bc_cap2
+m2 <- table(bc_cap2_recaps$sample)  # this will work now
+
+## defining a function to illustrate differences in distribution, with ks test
+ksplot <- function(x1, x2, legend=c("x1","x2"), main="", col=c(1,1), lty=c(1,1), xlab="") {
+  d1 <- density(x1, na.rm=TRUE)
+  d2 <- density(x2, na.rm=TRUE)
+  plot(d1, main=main, col=col[1], lty=lty[1],
+       xlim=range(d1$x, d2$x), ylim=range(d1$y, d2$y), xlab=xlab)
+  lines(density(x2, na.rm=TRUE), col=col[2], lty=lty[2])
+  legend("topright", lty=lty, col=col,
+         legend=paste0(legend, " (n=",c(sum(!is.na(x1)), sum(!is.na(x2))),")"))
+
+  ksks <- suppressWarnings(ks.test(x1, x2))
+  plot(ecdf(x1), main=c(main,
+                        paste0("D=", signif(ksks$statistic, digits=3), ", ",
+                        "pval=", signif(ksks$p.value, digits=3), collapse=NULL)),
+       col=col[1], lty=lty[1], xlab=xlab)
+  plot(ecdf(x2), col=col[2], lty=lty[2], add=TRUE)
+  legend("bottomright", lty=lty, col=col,
+         legend=paste0(legend, " (n=",c(sum(!is.na(x1)), sum(!is.na(x2))),")"))
+}
+```
+
+## Evaluation of Assumptions
+
+### Length Selectivity
+
+Length selectivity was assessed using Kolmogorov-Smirnov (KS) tests, using the lengths of Arctic grayling captured in each event tested against the lengths of fish that were captured in both events.  KS tests showed strong evidence of length selectivity in both events when considered without stratification.
+
+```{r}
+par(family="serif")
+par(mfrow=c(2,2))
+
+ksplot(x1=bc_cap1$Length, x2=bc_cap1_recaps$Length,
+       main="Event 1", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Fork Length (mm)")
+ksplot(x1=bc_cap2$Length, x2=bc_cap2_recaps$Length,
+       main="Event 2", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Fork Length (mm)")
+```
+
+However, after splitting the data by sample (float vs. hike), there is no longer any evidence of length selectivity, with results plotted below.
+
+It should be noted that one tagged fish (tag # 515) was tagged in the float sample and recaptured in the hike sample.  Since this fish was tagged 
+`r round(abs(42.80986 - bc_cap1_recaps$upstream[bc_cap1_recaps$Tag==515]), 2)`
+river kilometers (rkm) from the sampling area boundary and recaptured 
+`r round(abs(42.80986 - bc_cap2_recaps$upstream[bc_cap2_recaps$Tag==515]), 2)`
+rkm from the boundary, it was treated as being part of the sampling stratum corresponding to the float sample throughout the study for the sake of consistency in stratification.
+
+```{r}
+par(family="serif")
+par(mfrow=c(2,2))
+
+# ks.test(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"])
+# D = 0.10712, p-value = 0.7409
+ksplot(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"],
+       main="Event 1 - float", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Fork Length (mm)")
+
+# ks.test(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"])
+# D = 0.075859, p-value = 0.9699
+ksplot(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"],
+       main="Event 2 - float", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Fork Length (mm)")
+
+par(mfrow=c(2,2))
+# ks.test(bc_cap1$Length[bc_cap1$sample=="hike"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"])
+# D = 0.14723, p-value = 0.07561
+ksplot(bc_cap1$Length[bc_cap1$sample=="hike"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"],
+       main="Event 1 - hike", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Fork Length (mm)")
+
+# ks.test(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"])
+# D = 0.137, p-value = 0.1373
+ksplot(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"],
+       main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Fork Length (mm)")
+```
+
+### Spatial Selectivity
+
+Spatial selectivity was similarly evaluated using KS tests, in these cases testing the upriver position (distance in rkm from the lowest point in the study area) of the full samples in each event versus the subset of recaptured fish.  Results are plotted below.  Similarly, testing showed strong evidence of spatial selectivity when pooling the float sample together with the hike sample; however, there is no evidence of spatial selectivity when the two samples are considered separately.
+
+```{r}
+## -------------- spatial selectivity? ---------------- ##
+par(family="serif")
+par(mfrow=c(2,2))
+
+# ks.test(bc_cap1$upstream, bc_cap1_recaps$upstream)
+# D = 0.22825, p-value = 8.778e-06
+ksplot(bc_cap1$upstream, bc_cap1_recaps$upstream,
+       main="Event 1", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Upstream Position (rkm)")
+
+# ks.test(bc_cap2$upstream, bc_cap2_recaps$upstream)
+# D = 0.49899, p-value < 2.2e-16
+ksplot(bc_cap2$upstream, bc_cap2_recaps$upstream,
+       main="Event 2", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Upstream Position (rkm)")
+```
+
+```{r}
+## -------------- spatial selectivity? ---------------- ##
+par(family="serif")
+par(mfrow=c(2,2))
+
+## actually I don't think we need to worry about this one
+### actually yes we do!!  This suggests much more fish in the lower river
+### might even be float vs hike!   - IT IS, KEEP THIS STRATIFICATION!!!
+par(mfrow=c(2,2))
+# ks.test(bc_cap1$upstream[bc_cap1$sample=="float"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="float"])
+# D = 0.13742, p-value = 0.428
+ksplot(bc_cap1$upstream[bc_cap1$sample=="float"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="float"],
+       main="Event 1 - float", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Upstream Position (rkm)")
+
+# ks.test(bc_cap2$upstream[bc_cap2$sample=="float"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="float"])
+# D = 0.1145, p-value = 0.6445
+ksplot(bc_cap2$upstream[bc_cap2$sample=="float"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="float"],
+       main="Event 2 - float", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Upstream Position (rkm)")
+
+par(mfrow=c(2,2))
+# ks.test(bc_cap1$upstream[bc_cap1$sample=="hike"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="hike"])
+# D = 0.11804, p-value = 0.2432
+ksplot(bc_cap1$upstream[bc_cap1$sample=="hike"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="hike"],
+       main="Event 1 - hike", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Upstream Position (rkm)")
+
+# ks.test(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="hike"])
+# D = 0.11701, p-value = 0.2823
+ksplot(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="hike"],
+       main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Upstream Position (rkm)")
+```
+
+### Growth Recruitment
+
+```{r}
+## ---------------- growth recruitment? ----------------- ##
+length1 <- bc_cap1_recaps$Length[order(bc_cap1_recaps$Tag)]
+length2 <- bc_cap2_recaps_justtags$Length[order(bc_cap2_recaps_justtags$Tag)]
+
+diffs <- length2 - length1
+diffs <- diffs[abs(diffs) < 80]  # what happens when we remove that big outlier
+```
+
+With the relatively short time period between mark and recapture events, growth recruitment was not anticipated.  Quantitative assessment of growth recruitment confirms this: after culling one outlying measurement, the mean difference in recorded length was `r round(mean(diffs), 1)` mm, as compared to a standard deviation of `r round(sd(diffs), 1)` mm.  This yielded a paired t-test p-value of `r round(t.test(diffs)$p.value, 2)` when testing the null hypothesis of zero growth, giving no evidence of appreciable growth recruitment.
+
+### Immigration & Emigration
+
+With the high degree of summer site fidelity observed in the telemetry portion of this study, it was not anticipated that a meaningful degree of immigration or emigration would occur in the time period between the mark and recapture events.
+
+```{r}
+up1 <- bc_cap1_recaps$upstream[order(bc_cap1_recaps$Tag)]
+up2 <- bc_cap2_recaps_justtags$upstream[order(bc_cap2_recaps_justtags$Tag)]
+diffs <- up2-up1
+
+```
+
+Movement of marked fish may be approximately inferred from movement observed in recaptured fish. Movement is illustrated below, with upriver position (distance in rkm from the lowest point in the study area) expressed on the respective x-axes, with movement between events expressed on the y-axes.  As is evident from both figures, the majority of recaptured fish did not travel any appreciable distance, with only `r round(100*mean(abs(diffs)>.5))`% of fish observed to travel more than 0.5 rkm. Additionally, those that did move did not travel far in comparison to the size of the study area, and relatively few fish were observed near the endpoints of the study area.
+
+```{r fig.height=10}
+# plot(diffs)
+# sd(diffs)
+# mean(abs(diffs))
+# median(abs(diffs))
+# mean(abs(diffs)>.5)
+# par(mfrow=c(1,1))
+# plot(ecdf(abs(diffs)), xlim=c(0,5))
+
+par(mfrow=c(2,1))
+par(family="serif")
+
+plot(x=up1, y=diffs, asp=1,
+     xlab="Upriver Position - Mark Event (rkm)",
+     main="", ylab="Movement (rkm)")
+plot(x=up2, y=diffs, asp=1,
+     xlab="Upriver Position - Recapture Event (rkm)",
+     main="", ylab="Movement (rkm)")  # hardly any fish near endpoints, it's probably just fine
+
+```
+
+```{r}
+
+nboot <- 10000
+count_table <- matrix(nrow=nboot, ncol=4)
+for(i in 1:nboot) {
+  upstream_boot <- bc_cap1$upstream + sample(diffs, size=nrow(bc_cap1), replace=TRUE)
+  # table(cut(upstream_boot,
+  #           c(-100, 0, 42.81, 82.52, 200)))
+  #           # levels=c("(-100,0]",   " (0,42.8]", "(42.8,82.5]",  "(82.5,200])")))
+  count_table[i,1] <- sum(upstream_boot <= 0)
+  count_table[i,2] <- length(upstream_boot %s_inside(]% c(0, 42.81))
+  count_table[i,3] <- length(upstream_boot %s_inside(]% c(42.81, 82.5))
+  count_table[i,4] <- sum(upstream_boot > 82.5)
+}
+prop_table <- count_table/nrow(bc_cap1)
+# colMeans(prop_table)
+# we might lose 1% of tagged fish out the bottom, and the top is negligible
+
+
+```
+
+Since fairly equal numbers of recaptured fish were observed to move up- and downstream, it seems reasonable to assume that an approximately equal degree of movement occurs in and out of the study area at the endpoints and at the confluences of tributary streams, and between the river reaches subject to sampling via floating or hiking.  It is therefore reasonable to assume that any change in abundance in the population of inference (i.e. immigration or emigration) is negligible.  However, the potential does exist that marked fish may have left the study area between events, thus imparting some small bias.  This was investigated by approximating the movement of tagged fish by resampling the differences in observed position with replacement 10,000 times and adding them to the upriver positions observed in the mark event.  In this simulation, a negligible mean proportion (`r round(100*colMeans(prop_table)[4], 2)`%) of tagged fish had an ending positions above the top end of the study area, and a small mean proportion (`r round(100*colMeans(prop_table)[1], 2)`%) had an ending position below the bottom end.  It may be worth accounting for the bias this would impart, but it is likely that the bias would be small.
+
+## Abundance Estimation
+
+Abundance was estimated for each geographic stratum *t* (float vs. hike) using a Bailey estimator shown below:
+
+$$\hat{N}_t = \frac{n_{1,t}(n_{2,t}+1)}{m_{2,t}+1}$$
+
+and 
+
+$$\hat{V}(\hat{N}_t) =  \frac{n_{1,t}^2(n_{2,t}+1)(n_{2,t}-m_{2,t})}{(m_{2,t}+1)^2(m_{2,t}+2)}$$
+
+The abundances and associated variances estimated for each stratum were summed for the purpose of combined estimates:
+
+$$\hat{N} = \hat{N}_{float} + \hat{N}_{hike}$$
+
+and
+
+$$\hat{V}(\hat{N}) = \hat{V}(\hat{N}_{float}) + \hat{V}(\hat{N}_{hike})$$
+
+It should be noted that during the recapture event, one fish got away before its tag number was recorded, and one fish had no tag but did have a fin clip, indicating capture.  Both were recorded as recaptures.
+
+```{r}
+######### ----------------- abundance estimates ----------------- #########
+
+library(recapr)
+
+nhat <- NBailey(n1=n1, n2=n2, m2=m2) %>% 
+  unname %>% round %>% formatC(format="d", big.mark=",")  # estimated abundance
+
+se_nhat <- seBailey(n1=n1, n2=n2, m2=m2) %>% 
+  unname %>% round  %>% formatC(format="d", big.mark=",") # SE of estimated abundance
+# 
+# seBailey(n1=n1, n2=n2, m2=m2)/NBailey(n1=n1, n2=n2, m2=m2)   # CV of estimated abundance
+# 
+# ## both strata combined
+nhat_combined <- Nstrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey") %>% 
+  unname %>% round %>% formatC(format="d", big.mark=",")   # estimated abundance
+se_nhat_combined <- sestrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey") %>% 
+  unname %>% round %>% formatC(format="d", big.mark=",")  # SE of estimated abundance
+# 
+# sestrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey") /
+#   Nstrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey")   # CV of estimated abundance
+
+```
+
+The abundance was estimated as `r nhat[1]` and `r nhat[2]` for the float and hike strata, respectively (SE `r se_nhat[1]` and `r se_nhat[2]`, respectively), and `r nhat_combined` (SE `r se_nhat_combined`) for the full study area.
+
+## Length Distribution
+
+```{r, results='asis'}
+######### ----------------- ASL estimates (length bins) ----------------- #########
+
+lengthbreaks <- c(250, 270, 300, 350, 400, 450) # c(250, 270, 300, 400)
+lengthbreakcount <- ifelse(length(lengthbreaks)-1 <= 9, 
+                           c("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")[length(lengthbreaks)-1],
+                           length(lengthbreaks)-1)
+lengthbinwords <- paste(lengthbreaks[-length(lengthbreaks)],
+                        lengthbreaks[-1]-1, sep="-")
+lengthbinphrase <- paste(paste(lengthbinwords[-length(lengthbinwords)], collapse=", "),
+      lengthbinwords[length(lengthbinwords)], sep=", and ")
+
+boilerplate <- capture.output(
+  ASL_boilerplate(stratum = as.numeric(as.factor(bc_all$sample)),
+                # length = bc_all$Length,
+                age = cut(bc_all$Length, lengthbreaks, right=FALSE),
+                Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2)),
+                se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))))
+
+# replacing "age" with "length"
+boilerplate_fix <- gsub(pattern=" age", replacement=" length", x=boilerplate)
+
+# splitting the boilerplate text: up to references, and references onward
+boilerplate_uptoref <- boilerplate_fix[1:(which(boilerplate_fix=="## References")-1)]
+boilerplate_refon <- boilerplate_fix[(which(boilerplate_fix=="## References")):length(boilerplate_fix)]
+
+# printing the boilerplate up to references
+cat(boilerplate_uptoref, sep="\n")
+```
+
+The length composition of Arctic grayling was described by considering lengths in 
+`r lengthbreakcount` categories: `r lengthbinphrase` mm FL.
+
+The length composition was tabulated and stratified estimators were calculated as appropriate for the following cases:
+
+### Both sampling events (pooled)
+
+```{r, results='asis'}
+digitvec <- c(0,3,3,0,0)
+
+ASL_table(stratum = as.numeric(as.factor(bc_all$sample)),
+          # length = bc_all$Length,
+          age = cut(bc_all$Length, lengthbreaks, right=FALSE),
+          Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2)),
+          se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))) %>%
+  knitr::kable(digits=digitvec)
+```
+
+### Mark event only
+
+```{r, results='asis'}
+
+# just using first event sample
+ASL_table(stratum = as.numeric(as.factor(bc_cap1$sample)),
+          # length = bc_cap1$Length,
+          age = cut(bc_cap1$Length, lengthbreaks, right=FALSE),
+          Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2)),
+          se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))) %>%
+  knitr::kable(digits=digitvec)
+```
+
+### Recapture event only
+
+```{r, results='asis'}
+
+# just using second event sample
+ASL_table(stratum = as.numeric(as.factor(bc_cap2$sample)),
+          # length = bc_cap2$Length,
+          age = cut(bc_cap2$Length, lengthbreaks, right=FALSE),
+          Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2)),
+          se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))) %>%
+  knitr::kable(digits=digitvec)
+```
+
+### Float sample only
+
+```{r, results='asis'}
+
+# pooling both events, but separating by capture stratum
+with(subset(bc_all, sample == "float"),
+     ASL_table(
+       # length = Length,
+       age = cut(Length, lengthbreaks, right=FALSE),
+       Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2))[1],
+       se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))[1])) %>%
+  knitr::kable(digits=digitvec)
+```
+
+### Hike sample only
+
+```{r, results='asis'}
+
+with(subset(bc_all, sample == "hike"),
+     ASL_table(
+       # length = Length,
+       age = cut(Length, lengthbreaks, right=FALSE),
+       Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2))[2],
+       se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))[2])) %>%
+  knitr::kable(digits=digitvec)
+```
+
+```{r, results='asis'}
+# printing references
+cat(boilerplate_refon, sep="\n")
+```

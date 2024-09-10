@@ -287,6 +287,8 @@ ksplot(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2
        xlab="Upstream Position (rkm)")
 
 
+
+
 ## checking to see if there is still length selectivity detected after stratifying by sample
 ### THIS ACCOUNTS FOR MUCH OF THE LENGTH SELECTIVITY!!!
 par(mfrow=c(2,2))
@@ -336,20 +338,24 @@ ksplot(bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"], bc_cap2_recaps$Len
 length1 <- bc_cap1_recaps$Length[order(bc_cap1_recaps$Tag)]
 length2 <- bc_cap2_recaps_justtags$Length[order(bc_cap2_recaps_justtags$Tag)]
 
+diffs <- length2 - length1
+
 # checking that the order thing above actually worked - it does!
 bc_cap1_recaps$Tag[order(bc_cap1_recaps$Tag)] ==
 bc_cap2_recaps_justtags$Tag[order(bc_cap2_recaps_justtags$Tag)]
 
-plot(length2 - length1)
-plot(length2 - length1,
+diffs <- diffs[abs(diffs) < 80]  # what happens when we remove that big outlier
+
+plot(diffs)
+plot(diffs,
      col=1+as.numeric(as.factor((paste(bc_cap1_recaps$event,
                                        bc_cap1_recaps$sample))[order(bc_cap1_recaps$Tag)])))
-plot(length2 - length1,
+plot(diffs,
      col=1+as.numeric(as.factor((paste(bc_cap2_recaps_justtags$event,
                                        bc_cap2_recaps_justtags$sample))[order(bc_cap2_recaps_justtags$Tag)])))
-median(length2-length1)
-sd(length2-length1)
-t.test(length2-length1)
+median(diffs)
+sd(diffs)
+t.test(diffs)
 
 # table combination of float/hike mark/recap, then plot diffs
 recaps <- data.frame(Tag = bc_cap1_recaps$Tag[order(bc_cap1_recaps$Tag)],
@@ -383,14 +389,39 @@ mean(abs(diffs)>.5)
 par(mfrow=c(1,1))
 plot(ecdf(abs(diffs)), xlim=c(0,5))
 
-plot(x=up1, y=diffs)
-plot(x=up2, y=diffs)  # hardly any fish near endpoints, it's probably just fine
+par(mfrow=c(1,1))
+plot(x=up1, y=diffs, asp=1,
+     main="Upriver Position - Mark Event (rkm)",
+     xlab="", ylab="Movement (rkm)")
+plot(x=up2, y=diffs, asp=1,
+     main="Upriver Position - Recapture Event (rkm)",
+     xlab="", ylab="Movement (rkm)")  # hardly any fish near endpoints, it's probably just fine
+
+plot(x=up1, y=up2)
+
+plot(NA,
+     xlim=range(up1, up2),
+     ylim=c(1, length(up1)))
+segments(x0=up1[order((up1+up2)/2)],
+         x1=up2[order((up1+up2)/2)],
+         y0=seq_along(up1))
+points(x=up1[order((up1+up2)/2)], y=seq_along(up1))
+points(x=up2[order((up1+up2)/2)], y=seq_along(up1))
+
+plot(NA,
+     ylim=range(up1, up2),
+     xlim=c(1, length(up1)))
+segments(y0=up1[order((up1+up2)/2)],
+         y1=up2[order((up1+up2)/2)],
+         x0=seq_along(up1))
+points(y=up1[order((up1+up2)/2)], x=seq_along(up1))
+points(y=up2[order((up1+up2)/2)], x=seq_along(up1))
 
 # try resampling distances and adding them to all capture locations to see how
 # inferences are affected
 # at the very least, I can see what happens to the tagged population subject to recapture:
 
-nboot <- 1000
+nboot <- 10000
 count_table <- matrix(nrow=nboot, ncol=4)
 for(i in 1:nboot) {
   upstream_boot <- bc_cap1$upstream + sample(diffs, size=nrow(bc_cap1), replace=TRUE)

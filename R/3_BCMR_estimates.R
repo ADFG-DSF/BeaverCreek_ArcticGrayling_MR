@@ -31,6 +31,9 @@ bc_cap2_recaps$sample[bc_cap2_recaps$Tag == 515] <- "float"
 # making double sure we're using the right counts
 subset(bc_cap1, is.na(as.numeric(Tag)))
 table(bc_cap2$Tag, is.na(as.numeric(bc_cap2$Tag)))
+table(bc_cap2$Tag, is.na(as.numeric(bc_cap2$Tag))) %>% dim
+table(bc_cap2_recaps$Tag, is.na(as.numeric(bc_cap2_recaps$Tag)))
+table(bc_cap2_recaps$Tag, is.na(as.numeric(bc_cap2_recaps$Tag))) %>% dim
 subset(bc_cap2, Tag == "Recap")
 
 
@@ -39,21 +42,33 @@ n2 <- table(bc_cap2$sample)    # this should work
 # m2 <- table(recaps$sample1)    # wrong, there are Recap $Tag's in bc_cap2
 m2 <- table(bc_cap2_recaps$sample)  # this will work now
 
+
+
+
+######### ----------------- abundance estimates ----------------- #########
+
 library(recapr)
-NBailey(n1=n1, n2=n2, m2=m2)
-seBailey(n1=n1, n2=n2, m2=m2)
+NBailey(n1=n1, n2=n2, m2=m2)   # estimated abundance
+seBailey(n1=n1, n2=n2, m2=m2)  # SE of estimated abundance
 
-seBailey(n1=n1, n2=n2, m2=m2)/NBailey(n1=n1, n2=n2, m2=m2)
+seBailey(n1=n1, n2=n2, m2=m2)/NBailey(n1=n1, n2=n2, m2=m2)   # CV of estimated abundance
 
-# investigate the possibility of movement at ends & between strata?  simulate somehow
+## both strata combined
+Nstrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey")   # estimated abundance
+sestrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey")  # SE of estimated abundance
+
+sestrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey") /
+  Nstrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey")   # CV of estimated abundance
 
 
 
 
-# do the ASL_table thing
-library(dsftools)
 
-lengthbreaks <- c(250, 270, 330, 400)
+
+
+######### ----------------- ASL estimates (length bins) ----------------- #########
+
+lengthbreaks <- c(250, 270, 300, 350, 400, 450) # c(250, 270, 330, 400)
 
 # just using first event sample
 ASL_table(stratum = as.numeric(as.factor(bc_cap1$sample)),
@@ -97,3 +112,13 @@ with(subset(bc_all, sample == "hike"),
        age = cut(Length, lengthbreaks, right=FALSE),
        Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2))[2],
        se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))[2]))
+
+
+boilerplate <- capture.output(
+  ASL_boilerplate(stratum = as.numeric(as.factor(bc_all$sample)),
+                # length = bc_all$Length,
+                age = cut(bc_all$Length, lengthbreaks, right=FALSE),
+                Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2)),
+                se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))))
+boilerplate_fix <- gsub(pattern="age", replacement="length", x=boilerplate)
+cat(boilerplate_fix)
