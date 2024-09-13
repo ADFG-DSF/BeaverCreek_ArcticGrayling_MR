@@ -219,6 +219,25 @@ bc_cap2_recaps_justtags <- filter(bc_cap2, Tag %in% recap_tags)
 bc_cap2_recaps <- filter(bc_cap2, Tag %in% c(recap_tags, "Recap"))
 
 
+
+# overlaying float/hike samples on map and seeing where they fall
+par(mfrow=c(2,1))
+zoomtoseg(c(17,5,7),beaver_cr_op)
+points(points_albers[bc_all$sample == "float",], pch=16)
+zoomtoseg(c(17,5,7),beaver_cr_op)
+points(points_albers[bc_all$sample == "hike",], pch=16)
+
+
+par(mfrow=c(2,2))
+zoomtoseg(c(17,5,7),beaver_cr_op, main="mark - float")
+points(points_albers[bc_all$sample == "float" & bc_all$event == "mark",], pch=16)
+zoomtoseg(c(17,5,7),beaver_cr_op, main="mark - hike")
+points(points_albers[bc_all$sample == "hike" & bc_all$event == "mark",], pch=16)
+zoomtoseg(c(17,5,7),beaver_cr_op, main="recap - float")
+points(points_albers[bc_all$sample == "float" & bc_all$event == "recap",], pch=16)
+zoomtoseg(c(17,5,7),beaver_cr_op, main="recap - hike")
+points(points_albers[bc_all$sample == "hike" & bc_all$event == "recap",], pch=16)
+
 ### MAKE SURE FINAL CALCS INCLUDE NON-NUMBERED FISH
 ### - Tag = "Recap"
 ### - Tag = "none"
