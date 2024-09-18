@@ -65,28 +65,6 @@ ksplot(x1=bc_cap2$Length, x2=bc_cap2_recaps$Length,
        main="Event 2", legend=c("All","Recaps"), col=c(1,4),
        xlab="Fork Length (mm)")
 
-# plot(density(bc_cap1$Length, na.rm=T),
-#      main="Event 1: All vs Recaptures", xlab="")
-# legend("topright", lty=1, col=c(1,2), legend=c("All","Recaps"))
-# lines(density(bc_cap1_recaps$Length, na.rm=T), col=2)
-# plot(ecdf(bc_cap1$Length),
-#      main="Event 1: All vs Recaptures", xlab="")
-# legend("bottomright", lty=1, col=c(1,2), legend=c("All","Recaps"))
-# plot(ecdf(bc_cap1_recaps$Length), add=T, col=2)
-
-
-# ks.test(bc_cap2$Length, bc_cap2_recaps$Length)  # cap vs recap for second event
-# # D = 0.16438, p-value = 0.002293
-# # evidence of size selectivity in first event
-#
-# plot(density(bc_cap2$Length, na.rm=T),
-#      main="Event 2: All vs Recaptures", xlab="")
-# legend("topright", lty=1, col=c(1,4), legend=c("All","Recaps"))
-# lines(density(bc_cap2_recaps$Length, na.rm=T), col=4)
-# plot(ecdf(bc_cap2$Length),
-#      main="Event 2: All vs Recaptures", xlab="")
-# legend("bottomright", lty=1, col=c(1,4), legend=c("All","Recaps"))
-# plot(ecdf(bc_cap2_recaps$Length), add=T, col=4)
 
 
 # actually very curious how cap-cap and recap-recap compare
@@ -98,30 +76,6 @@ ksplot(x1=bc_cap1_recaps$Length, x2=bc_cap2_recaps$Length,
        main="Recaptures", legend=c("Event 1","Event 2"), col=c(2,4),
        xlab="Fork Length (mm)")
 
-# ks.test(bc_cap1$Length, bc_cap2$Length)  # cap for first event vs cap for second
-# D = 0.057789, p-value = 0.03195
-
-# plot(density(bc_cap1$Length, na.rm=T),
-#      main="Event 1 All vs Event 2 All", xlab="")
-# legend("topright", lty=c(1,2), legend=c("Event 1", "Event 2"))
-# lines(density(bc_cap2$Length, na.rm=T), lty=2)
-# plot(ecdf(bc_cap1$Length),
-#      main="Event 1 All vs Event 2 All", xlab="")
-# legend("bottomright", lty=c(1,2), legend=c("Event 1", "Event 2"))
-# plot(ecdf(bc_cap2$Length), add=T, lty=2)
-#
-#
-# ks.test(bc_cap1_recaps$Length, bc_cap2_recaps$Length)  # recap for first event vs recap for second
-# # D = 0.051852, p-value = 0.9934
-#
-# plot(density(bc_cap1_recaps$Length, na.rm=T),
-#      main="Event 1 Recaps vs Event 2 Recaps", xlab="", col=2)
-# legend("topright", col=c(2,4), legend=c("Event 1", "Event 2"))
-# lines(density(bc_cap2_recaps$Length, na.rm=T), col=4)
-# plot(ecdf(bc_cap1_recaps$Length), col=2,
-#      main="Event 1 Recaps vs Event 2 Recaps", xlab="")
-# legend("bottomright", col=c(2,4), lty=1, legend=c("Event 1", "Event 2"))
-# plot(ecdf(bc_cap2_recaps$Length), add=T, col=4)
 
 
 
@@ -260,30 +214,95 @@ ksplot(bc_cap2$upstream, bc_cap2_recaps$upstream,
 ## actually I don't think we need to worry about this one
 ### actually yes we do!!  This suggests much more fish in the lower river
 ### might even be float vs hike!   - IT IS, KEEP THIS STRATIFICATION!!!
+# par(mfrow=c(2,2))
+# ks.test(bc_cap1$upstream[bc_cap1$sample=="float"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="float"])
+# # D = 0.13742, p-value = 0.428
+# ksplot(bc_cap1$upstream[bc_cap1$sample=="float"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="float"],
+#        main="Event 1 - float", legend=c("All","Recaps"), col=c(1,2),
+#        xlab="Upstream Position (rkm)")
+#
+# ks.test(bc_cap2$upstream[bc_cap2$sample=="float"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="float"])
+# # D = 0.1145, p-value = 0.6445
+# ksplot(bc_cap2$upstream[bc_cap2$sample=="float"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="float"],
+#        main="Event 2 - float", legend=c("All","Recaps"), col=c(1,4),
+#        xlab="Upstream Position (rkm)")
+#
+# par(mfrow=c(2,2))
+# ks.test(bc_cap1$upstream[bc_cap1$sample=="hike"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="hike"])
+# # D = 0.11804, p-value = 0.2432
+# ksplot(bc_cap1$upstream[bc_cap1$sample=="hike"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="hike"],
+#        main="Event 1 - hike", legend=c("All","Recaps"), col=c(1,2),
+#        xlab="Upstream Position (rkm)")
+#
+# ks.test(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="hike"])
+# # D = 0.11701, p-value = 0.2823
+# ksplot(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="hike"],
+#        main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4),
+#        xlab="Upstream Position (rkm)")
+
+
 par(mfrow=c(2,2))
-ks.test(bc_cap1$upstream[bc_cap1$sample=="float"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="float"])
-# D = 0.13742, p-value = 0.428
-ksplot(bc_cap1$upstream[bc_cap1$sample=="float"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="float"],
-       main="Event 1 - float", legend=c("All","Recaps"), col=c(1,2),
+ks.test(bc_cap1$upstream[bc_cap1$Stratum1=="Beaver"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Beaver"])
+# D = 0.11782, p-value = 0.6284
+ksplot(bc_cap1$upstream[bc_cap1$Stratum1=="Beaver"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Beaver"],
+       main="Event 1 - Beaver", legend=c("All","Recaps"), col=c(1,2),
        xlab="Upstream Position (rkm)")
 
-ks.test(bc_cap2$upstream[bc_cap2$sample=="float"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="float"])
-# D = 0.1145, p-value = 0.6445
-ksplot(bc_cap2$upstream[bc_cap2$sample=="float"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="float"],
-       main="Event 2 - float", legend=c("All","Recaps"), col=c(1,4),
+ks.test(bc_cap2$upstream[bc_cap2$Stratum1=="Beaver"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Beaver"])
+# D = 0.12232, p-value = 0.5175
+ksplot(bc_cap2$upstream[bc_cap2$Stratum1=="Beaver"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Beaver"],
+       main="Event 2 - Beaver", legend=c("All","Recaps"), col=c(1,4),
        xlab="Upstream Position (rkm)")
 
 par(mfrow=c(2,2))
-ks.test(bc_cap1$upstream[bc_cap1$sample=="hike"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="hike"])
-# D = 0.11804, p-value = 0.2432
-ksplot(bc_cap1$upstream[bc_cap1$sample=="hike"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="hike"],
-       main="Event 1 - hike", legend=c("All","Recaps"), col=c(1,2),
+ks.test(bc_cap1$upstream[bc_cap1$Stratum1=="Nome"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Nome"])
+# D = 0.1425, p-value = 0.09111
+ksplot(bc_cap1$upstream[bc_cap1$Stratum1=="Nome"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Nome"],
+       main="Event 1 - Nome", legend=c("All","Recaps"), col=c(1,2),
        xlab="Upstream Position (rkm)")
 
-ks.test(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="hike"])
-# D = 0.11701, p-value = 0.2823
-ksplot(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="hike"],
-       main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4),
+ks.test(bc_cap2$upstream[bc_cap2$Stratum1=="Nome"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Nome"])
+# D = 0.11333, p-value = 0.3215
+ksplot(bc_cap2$upstream[bc_cap2$Stratum1=="Nome"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Nome"],
+       main="Event 2 - Nome", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Upstream Position (rkm)")
+
+par(mfrow=c(2,2))
+ks.test(bc_cap1$upstream[bc_cap1$Stratum2=="Lower Nome"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum2=="Lower Nome"])
+# D = 0.52273, p-value = 0.1898
+ksplot(bc_cap1$upstream[bc_cap1$Stratum2=="Lower Nome"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum2=="Lower Nome"],
+       main="Event 1 - Lower Nome", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Upstream Position (rkm)")
+
+ks.test(bc_cap2$upstream[bc_cap2$Stratum2=="Lower Nome"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum2=="Lower Nome"])
+# D = 0.43333, p-value = 0.3659
+ksplot(bc_cap2$upstream[bc_cap2$Stratum2=="Lower Nome"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum2=="Lower Nome"],
+       main="Event 2 - Lower Nome", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Upstream Position (rkm)")
+
+par(mfrow=c(2,2))
+ks.test(bc_cap1$upstream[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum2=="2000 Study"])
+# D = 0.13215, p-value = 0.205
+ksplot(bc_cap1$upstream[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum2=="2000 Study"],
+       main="Event 1 - 2000 Study", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Upstream Position (rkm)")
+
+ks.test(bc_cap2$upstream[bc_cap2$Stratum2=="2000 Study"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum2=="2000 Study"])
+# D = 0.072168, p-value = 0.919
+ksplot(bc_cap2$upstream[bc_cap2$Stratum2=="2000 Study"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum2=="2000 Study"],
+       main="Event 2 - 2000 Study", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Upstream Position (rkm)")
+
+ks.test(bc_cap1$upstream[bc_cap1$Stratum2=="Upper Nome"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum2=="Upper Nome"])
+# D = 0.32609, p-value = 0.3363
+ksplot(bc_cap1$upstream[bc_cap1$Stratum2=="Upper Nome"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum2=="Upper Nome"],
+       main="Event 2 - Upper Nome", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Upstream Position (rkm)")
+
+ks.test(bc_cap2$upstream[bc_cap2$Stratum2=="Upper Nome"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum2=="Upper Nome"])
+# D = 0.27016, p-value = 0.5519
+ksplot(bc_cap2$upstream[bc_cap2$Stratum2=="Upper Nome"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum2=="Upper Nome"],
+       main="Event 2 - Upper Nome", legend=c("All","Recaps"), col=c(1,4),
        xlab="Upstream Position (rkm)")
 
 
@@ -291,46 +310,113 @@ ksplot(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2
 
 ## checking to see if there is still length selectivity detected after stratifying by sample
 ### THIS ACCOUNTS FOR MUCH OF THE LENGTH SELECTIVITY!!!
+# par(mfrow=c(2,2))
+# ks.test(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"])
+# # D = 0.10712, p-value = 0.7409
+# ksplot(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"],
+#        main="Event 1 - float", legend=c("All","Recaps"), col=c(1,2),
+#        xlab="Fork Length (mm)")
+#
+# ks.test(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"])
+# # D = 0.075859, p-value = 0.9699
+# ksplot(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"],
+#        main="Event 2 - float", legend=c("All","Recaps"), col=c(1,4),
+#        xlab="Fork Length (mm)")
+#
+# par(mfrow=c(2,2))
+# ks.test(bc_cap1$Length[bc_cap1$sample=="hike"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"])
+# # D = 0.14723, p-value = 0.07561
+# ksplot(bc_cap1$Length[bc_cap1$sample=="hike"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"],
+#        main="Event 1 - hike", legend=c("All","Recaps"), col=c(1,2),
+#        xlab="Fork Length (mm)")
+#
+# ks.test(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"])
+# # D = 0.137, p-value = 0.1373
+# ksplot(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"],
+#        main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4),
+#        xlab="Fork Length (mm)")
+
 par(mfrow=c(2,2))
-ks.test(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"])
-# D = 0.10712, p-value = 0.7409
-ksplot(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"],
-       main="Event 1 - float", legend=c("All","Recaps"), col=c(1,2),
+ks.test(bc_cap1$Length[bc_cap1$Stratum1=="Beaver"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum1=="Beaver"])
+# D = 0.10478, p-value = 0.7664
+ksplot(bc_cap1$Length[bc_cap1$Stratum1=="Beaver"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum1=="Beaver"],
+       main="Event 1 - Beaver", legend=c("All","Recaps"), col=c(1,2),
        xlab="Fork Length (mm)")
 
-ks.test(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"])
-# D = 0.075859, p-value = 0.9699
-ksplot(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"],
-       main="Event 2 - float", legend=c("All","Recaps"), col=c(1,4),
+ks.test(bc_cap2$Length[bc_cap2$Stratum1=="Beaver"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum1=="Beaver"])
+# D = 0.067667, p-value = 0.9869
+ksplot(bc_cap2$Length[bc_cap2$Stratum1=="Beaver"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum1=="Beaver"],
+       main="Event 2 - Beaver", legend=c("All","Recaps"), col=c(1,4),
        xlab="Fork Length (mm)")
 
 par(mfrow=c(2,2))
-ks.test(bc_cap1$Length[bc_cap1$sample=="hike"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"])
-# D = 0.14723, p-value = 0.07561
-ksplot(bc_cap1$Length[bc_cap1$sample=="hike"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"],
-       main="Event 1 - hike", legend=c("All","Recaps"), col=c(1,2),
+ks.test(bc_cap1$Length[bc_cap1$Stratum1=="Nome"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum1=="Nome"])
+# D = 0.16239, p-value = 0.03623
+ksplot(bc_cap1$Length[bc_cap1$Stratum1=="Nome"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum1=="Nome"],
+       main="Event 1 - Nome", legend=c("All","Recaps"), col=c(1,2),
        xlab="Fork Length (mm)")
 
-ks.test(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"])
-# D = 0.137, p-value = 0.1373
-ksplot(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"],
-       main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4),
+ks.test(bc_cap2$Length[bc_cap2$Stratum1=="Nome"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum1=="Nome"])
+# D = 0.14644, p-value = 0.09537
+ksplot(bc_cap2$Length[bc_cap2$Stratum1=="Nome"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum1=="Nome"],
+       main="Event 2 - Nome", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Fork Length (mm)")
+
+par(mfrow=c(2,2))
+ks.test(bc_cap1$Length[bc_cap1$Stratum2=="Lower Nome"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum2=="Lower Nome"])
+# D = 0.31818, p-value = 0.755
+ksplot(bc_cap1$Length[bc_cap1$Stratum2=="Lower Nome"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum2=="Lower Nome"],
+       main="Event 1 - Lower Nome", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Fork Length (mm)")
+
+ks.test(bc_cap2$Length[bc_cap2$Stratum2=="Lower Nome"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum2=="Lower Nome"])
+# D = 0.3, p-value = 0.8104
+ksplot(bc_cap2$Length[bc_cap2$Stratum2=="Lower Nome"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum2=="Lower Nome"],
+       main="Event 2 - Lower Nome", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Fork Length (mm)")
+
+par(mfrow=c(2,2))
+ks.test(bc_cap1$Length[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum2=="2000 Study"])
+# D = 0.15153, p-value = 0.1002
+ksplot(bc_cap1$Length[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum2=="2000 Study"],
+       main="Event 1 - 2000 Study", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Fork Length (mm)")
+
+ks.test(bc_cap2$Length[bc_cap2$Stratum2=="2000 Study"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum2=="2000 Study"])
+# D = 0.14634, p-value = 0.1611
+ksplot(bc_cap2$Length[bc_cap2$Stratum2=="2000 Study"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum2=="2000 Study"],
+       main="Event 2 - 2000 Study", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Fork Length (mm)")
+
+par(mfrow=c(2,2))
+ks.test(bc_cap1$Length[bc_cap1$Stratum2=="Upper Nome"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum2=="Upper Nome"])
+# D = 0.17935, p-value = 0.9433
+ksplot(bc_cap1$Length[bc_cap1$Stratum2=="Upper Nome"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum2=="Upper Nome"],
+       main="Event 1 - Upper Nome", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Fork Length (mm)")
+
+ks.test(bc_cap2$Length[bc_cap2$Stratum2=="Upper Nome"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum2=="Upper Nome"])
+# D = 0.28629, p-value = 0.494
+ksplot(bc_cap2$Length[bc_cap2$Stratum2=="Upper Nome"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum2=="Upper Nome"],
+       main="Event 2 - Upper Nome", legend=c("All","Recaps"), col=c(1,4),
        xlab="Fork Length (mm)")
 
 
-## curious to see how samples compare
-ksplot(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1$Length[bc_cap1$sample=="hike"],
-       main="Event 1 - all", legend=c("float","hike"), lty=c(1,2),
-       xlab="Fork Length (mm)")
-ksplot(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2$Length[bc_cap2$sample=="hike"],
-       main="Event 2 - all", legend=c("float","hike"), lty=c(1,2),
-       xlab="Fork Length (mm)")
-ksplot(bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"],
-       main="Event 1 - recaps", legend=c("float","hike"), col=c(2,4),
-       xlab="Fork Length (mm)")
-ksplot(bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"],
-       main="Event 2 - recaps", legend=c("float","hike"), col=c(2,4),
-       xlab="Fork Length (mm)")
+
+
+# ## curious to see how samples compare
+# ksplot(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1$Length[bc_cap1$sample=="hike"],
+#        main="Event 1 - all", legend=c("float","hike"), lty=c(1,2),
+#        xlab="Fork Length (mm)")
+# ksplot(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2$Length[bc_cap2$sample=="hike"],
+#        main="Event 2 - all", legend=c("float","hike"), lty=c(1,2),
+#        xlab="Fork Length (mm)")
+# ksplot(bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"],
+#        main="Event 1 - recaps", legend=c("float","hike"), col=c(2,4),
+#        xlab="Fork Length (mm)")
+# ksplot(bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"],
+#        main="Event 2 - recaps", legend=c("float","hike"), col=c(2,4),
+#        xlab="Fork Length (mm)")
 
 
 
@@ -357,24 +443,77 @@ median(diffs)
 sd(diffs)
 t.test(diffs)
 
-# table combination of float/hike mark/recap, then plot diffs
+# table combination of beaver/nome mark/recap, then plot diffs
 recaps <- data.frame(Tag = bc_cap1_recaps$Tag[order(bc_cap1_recaps$Tag)],
-                     length1 = bc_cap1_recaps$Length[order(bc_cap1_recaps$Tag)],
-                     length2 = bc_cap2_recaps_justtags$Length[order(bc_cap2_recaps_justtags$Tag)],
-                     sample1 = bc_cap1_recaps$sample[order(bc_cap1_recaps$Tag)],
-                     sample2 = bc_cap2_recaps_justtags$sample[order(bc_cap2_recaps_justtags$Tag)],
-                     upstream1 = bc_cap1_recaps$upstream[order(bc_cap1_recaps$Tag)],
-                     upstream2 = bc_cap2_recaps_justtags$upstream[order(bc_cap2_recaps_justtags$Tag)])
-recaps$diff <- recaps$length2 - recaps$length1
-table(recaps$sample1, recaps$sample2)
+                     length_cap1 = bc_cap1_recaps$Length[order(bc_cap1_recaps$Tag)],
+                     length_cap2 = bc_cap2_recaps_justtags$Length[order(bc_cap2_recaps_justtags$Tag)],
+                     sample_cap1 = bc_cap1_recaps$sample[order(bc_cap1_recaps$Tag)],
+                     sample_cap2 = bc_cap2_recaps_justtags$sample[order(bc_cap2_recaps_justtags$Tag)],
+                     upstream_cap1 = bc_cap1_recaps$upstream[order(bc_cap1_recaps$Tag)],
+                     upstream_cap2 = bc_cap2_recaps_justtags$upstream[order(bc_cap2_recaps_justtags$Tag)],
+                     Stratum1_cap1 = bc_cap1_recaps$Stratum1[order(bc_cap1_recaps$Tag)],
+                     Stratum1_cap2 = bc_cap2_recaps_justtags$Stratum1[order(bc_cap2_recaps_justtags$Tag)],
+                     Stratum2_cap1 = bc_cap1_recaps$Stratum2[order(bc_cap1_recaps$Tag)],
+                     Stratum2_cap2 = bc_cap2_recaps_justtags$Stratum2[order(bc_cap2_recaps_justtags$Tag)])
+recaps$diff <- recaps$length_cap2 - recaps$length_cap1
+table(recaps$sample_cap1, recaps$sample_cap2)
 par(mfrow=c(1,1))
 recaps %>%
-  ggplot(aes(y=diff, x=seq_along(diff),col=sample1)) +
+  ggplot(aes(y=diff, x=seq_along(diff),col=sample_cap1)) +
   geom_point()
 recaps %>%
-  ggplot(aes(y=diff, x=sample1)) +
+  ggplot(aes(y=diff, x=sample_cap1)) +
   geom_boxplot()
 
+
+
+table(recaps$Stratum1_cap1, recaps$Stratum1_cap2)  # one problem fish
+table(recaps$Stratum2_cap1, recaps$Stratum2_cap2)  # four problem fish
+
+# endpoints of strata
+riverlengths <- cumsum(rev(bc_river$lengths))/1000
+Stratum1_bdy <- riverlengths[4]
+Stratum2_bdy <- c(riverlengths[4], airstrip_upstream, riverlengths[6])
+
+### looking at where the problem fish were with respect to boundaries
+## one problem fish wrt Stratum1  ---------
+subset(recaps, Stratum1_cap1=="Beaver" & Stratum1_cap2=="Nome")
+recaps$upstream_cap1[recaps$Stratum1_cap1=="Beaver" & recaps$Stratum1_cap2=="Nome"] - Stratum1_bdy
+recaps$upstream_cap2[recaps$Stratum1_cap1=="Beaver" & recaps$Stratum1_cap2=="Nome"] - Stratum1_bdy
+# much further downstream than upstream: -0.46 vs 0.05 rkm
+# call it Beaver (tag 515)
+
+## four problem fish wrt Stratum2  ---------
+subset(recaps, Stratum2_cap1=="2000 Study" & Stratum2_cap2=="Upper Nome")
+recaps$upstream_cap1[recaps$Stratum2_cap1=="2000 Study" & recaps$Stratum2_cap2=="Upper Nome"] - Stratum2_bdy[3]
+recaps$upstream_cap2[recaps$Stratum2_cap1=="2000 Study" & recaps$Stratum2_cap2=="Upper Nome"] - Stratum2_bdy[3]
+# much further downstream than upstream: -10.36 vs 1.13
+# call it 2000 Study (tag 1358)
+
+subset(recaps, Stratum2_cap1=="Beaver" & Stratum2_cap2=="Lower Nome")
+# much further downstream than upstream: -0.46 vs 0.05 rkm
+# call it Beaver (tag 515)  - this is the same fish as earlier
+
+subset(recaps, Stratum2_cap1=="Lower Nome" & Stratum2_cap2=="2000 Study")
+recaps$upstream_cap1[recaps$Stratum2_cap1=="Lower Nome" & recaps$Stratum2_cap2=="2000 Study"] - Stratum2_bdy[2]
+recaps$upstream_cap2[recaps$Stratum2_cap1=="Lower Nome" & recaps$Stratum2_cap2=="2000 Study"] - Stratum2_bdy[2]
+# further upstream than downstream: 7.13 vs -1.6 rkm
+# can call it 2000 Study (tag 1378)
+
+subset(recaps, Stratum2_cap1=="Upper Nome" & Stratum2_cap2=="2000 Study")
+recaps$upstream_cap1[recaps$Stratum2_cap1=="Upper Nome" & recaps$Stratum2_cap2=="2000 Study"] - Stratum2_bdy[3]
+recaps$upstream_cap2[recaps$Stratum2_cap1=="Upper Nome" & recaps$Stratum2_cap2=="2000 Study"] - Stratum2_bdy[3]
+# further upstream than downstream: 4.61 vs -0.59 rkm
+# call it Upper Nome (tag 751)
+
+
+
+# # should try a Darroch.  I don't want to use a Darroch, but should try it
+# library(recapr)
+# NDarroch(n1=unname(table(bc_cap1$Stratum2)),
+#          n2=unname(table(bc_cap2$Stratum2)),
+#          stratamat=as.matrix(table(recaps$Stratum2_cap1, recaps$Stratum2_cap2)))
+# # does not seem to work and I don't know why
 
 
 ## ----------------- movement in/out? ------------------ ##

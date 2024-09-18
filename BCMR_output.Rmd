@@ -13,14 +13,22 @@ knitr::opts_chunk$set(echo = FALSE, fig.width = 10, fig.height = 7, dpi=300,
 ```{r fig.show='hide'}
 source("R/1_BCMR_data.R")
 
-# doing this with the object that will be used to tally!
-bc_cap2_recaps$sample[bc_cap2_recaps$Tag == 515] <- "float"
+# # doing this with the object that will be used to tally!
+# bc_cap2_recaps$sample[bc_cap2_recaps$Tag == 515] <- "float"
+# 
+# 
+# n1 <- table(bc_cap1$sample)    # this should work
+# n2 <- table(bc_cap2$sample)    # this should work
+# # m2 <- table(recaps$sample1)    # wrong, there are Recap $Tag's in bc_cap2
+# m2 <- table(bc_cap2_recaps$sample)  # this will work now
+n1_Stratum1 <- table(bc_cap1$Stratum1)    # this should work
+n2_Stratum1 <- table(bc_cap2$Stratum1)    # this should work
+m2_Stratum1 <- table(bc_cap2_recaps$Stratum1)  # this will work now
 
+n1_Stratum2 <- table(bc_cap1$Stratum2)    # this should work
+n2_Stratum2 <- table(bc_cap2$Stratum2)    # this should work
+m2_Stratum2 <- table(bc_cap2_recaps$Stratum2)  # this will work now
 
-n1 <- table(bc_cap1$sample)    # this should work
-n2 <- table(bc_cap2$sample)    # this should work
-# m2 <- table(recaps$sample1)    # wrong, there are Recap $Tag's in bc_cap2
-m2 <- table(bc_cap2_recaps$sample)  # this will work now
 
 ## defining a function to illustrate differences in distribution, with ks test
 ksplot <- function(x1, x2, legend=c("x1","x2"), main="", col=c(1,1), lty=c(1,1), xlab="") {
@@ -61,47 +69,52 @@ ksplot(x1=bc_cap2$Length, x2=bc_cap2_recaps$Length,
        xlab="Fork Length (mm)")
 ```
 
-However, after splitting the data by sample (float vs. hike), there is no longer any evidence of length selectivity, with results plotted below.
+However, after splitting the data by geographic stratum (Beaver Creek vs. Nome Creek), there is no longer any evidence of length selectivity, with results plotted below.
 
-It should be noted that one tagged fish (tag # 515) was tagged in the float sample and recaptured in the hike sample.  Since this fish was tagged 
+It should be noted that one tagged fish (tag # 515) was tagged in Beaver Creek and recaptured in Nome Creek.  Since this fish was tagged 
 `r round(abs(42.80986 - bc_cap1_recaps$upstream[bc_cap1_recaps$Tag==515]), 2)`
-river kilometers (rkm) from the sampling area boundary and recaptured 
+river kilometers (rkm) from the confluence and recaptured 
 `r round(abs(42.80986 - bc_cap2_recaps$upstream[bc_cap2_recaps$Tag==515]), 2)`
-rkm from the boundary, it was treated as being part of the sampling stratum corresponding to the float sample throughout the study for the sake of consistency in stratification.
+rkm from the confluence, it was treated as being part of the Beaver Creek throughout the study for the sake of consistency in stratification.  Since only one tagged fish was captured in another spatial stratum, it was deemed sufficient to reassign this fish and make the assumption of negligible movement between strata, rather than use a partially-stratified (Darroch) estimator. 
 
 ```{r}
 par(family="serif")
 par(mfrow=c(2,2))
 
-# ks.test(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"])
-# D = 0.10712, p-value = 0.7409
-ksplot(bc_cap1$Length[bc_cap1$sample=="float"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="float"],
-       main="Event 1 - float", legend=c("All","Recaps"), col=c(1,2),
+par(mfrow=c(2,2))
+# ks.test(bc_cap1$Length[bc_cap1$Stratum1=="Beaver"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum1=="Beaver"])
+# D = 0.10478, p-value = 0.7664
+ksplot(bc_cap1$Length[bc_cap1$Stratum1=="Beaver"], 
+       bc_cap1_recaps$Length[bc_cap1_recaps$Stratum1=="Beaver"],
+       main="Event 1 - Beaver", legend=c("All","Recaps"), col=c(1,2),
        xlab="Fork Length (mm)")
 
-# ks.test(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"])
-# D = 0.075859, p-value = 0.9699
-ksplot(bc_cap2$Length[bc_cap2$sample=="float"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="float"],
-       main="Event 2 - float", legend=c("All","Recaps"), col=c(1,4),
+# ks.test(bc_cap2$Length[bc_cap2$Stratum1=="Beaver"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum1=="Beaver"])
+# D = 0.067667, p-value = 0.9869
+ksplot(bc_cap2$Length[bc_cap2$Stratum1=="Beaver"], 
+       bc_cap2_recaps$Length[bc_cap2_recaps$Stratum1=="Beaver"],
+       main="Event 2 - Beaver", legend=c("All","Recaps"), col=c(1,4),
        xlab="Fork Length (mm)")
 
 par(mfrow=c(2,2))
-# ks.test(bc_cap1$Length[bc_cap1$sample=="hike"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"])
-# D = 0.14723, p-value = 0.07561
-ksplot(bc_cap1$Length[bc_cap1$sample=="hike"], bc_cap1_recaps$Length[bc_cap1_recaps$sample=="hike"],
-       main="Event 1 - hike", legend=c("All","Recaps"), col=c(1,2),
+# ks.test(bc_cap1$Length[bc_cap1$Stratum1=="Nome"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum1=="Nome"])
+# D = 0.16239, p-value = 0.03623
+ksplot(bc_cap1$Length[bc_cap1$Stratum1=="Nome"], 
+       bc_cap1_recaps$Length[bc_cap1_recaps$Stratum1=="Nome"],
+       main="Event 1 - Nome", legend=c("All","Recaps"), col=c(1,2),
        xlab="Fork Length (mm)")
 
-# ks.test(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"])
-# D = 0.137, p-value = 0.1373
-ksplot(bc_cap2$Length[bc_cap2$sample=="hike"], bc_cap2_recaps$Length[bc_cap2_recaps$sample=="hike"],
-       main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4),
+# ks.test(bc_cap2$Length[bc_cap2$Stratum1=="Nome"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum1=="Nome"])
+# D = 0.14644, p-value = 0.09537
+ksplot(bc_cap2$Length[bc_cap2$Stratum1=="Nome"], 
+       bc_cap2_recaps$Length[bc_cap2_recaps$Stratum1=="Nome"],
+       main="Event 2 - Nome", legend=c("All","Recaps"), col=c(1,4),
        xlab="Fork Length (mm)")
 ```
 
 ### Spatial Selectivity
 
-Spatial selectivity was similarly evaluated using KS tests, in these cases testing the upriver position (distance in rkm from the lowest point in the study area) of the full samples in each event versus the subset of recaptured fish.  Results are plotted below.  Similarly, testing showed strong evidence of spatial selectivity when pooling the float sample together with the hike sample; however, there is no evidence of spatial selectivity when the two samples are considered separately.
+Spatial selectivity was similarly evaluated using KS tests, in these cases testing the upriver position (distance in rkm from the lowest point in the study area) of the full samples in each event versus the subset of recaptured fish.  Results are plotted below.  Similarly, testing showed strong evidence of spatial selectivity when pooling the Beaver Creek sample together with the Nome Creek sample; however, there is no evidence of spatial selectivity when the two samples are considered separately.
 
 ```{r}
 ## -------------- spatial selectivity? ---------------- ##
@@ -130,29 +143,29 @@ par(mfrow=c(2,2))
 ### actually yes we do!!  This suggests much more fish in the lower river
 ### might even be float vs hike!   - IT IS, KEEP THIS STRATIFICATION!!!
 par(mfrow=c(2,2))
-# ks.test(bc_cap1$upstream[bc_cap1$sample=="float"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="float"])
-# D = 0.13742, p-value = 0.428
-ksplot(bc_cap1$upstream[bc_cap1$sample=="float"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="float"],
-       main="Event 1 - float", legend=c("All","Recaps"), col=c(1,2),
+# ks.test(bc_cap1$upstream[bc_cap1$Stratum1=="Beaver"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Beaver"])
+# D = 0.11782, p-value = 0.6284
+ksplot(bc_cap1$upstream[bc_cap1$Stratum1=="Beaver"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Beaver"],
+       main="Event 1 - Beaver", legend=c("All","Recaps"), col=c(1,2),
        xlab="Upstream Position (rkm)")
 
-# ks.test(bc_cap2$upstream[bc_cap2$sample=="float"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="float"])
-# D = 0.1145, p-value = 0.6445
-ksplot(bc_cap2$upstream[bc_cap2$sample=="float"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="float"],
-       main="Event 2 - float", legend=c("All","Recaps"), col=c(1,4),
+# ks.test(bc_cap2$upstream[bc_cap2$Stratum1=="Beaver"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Beaver"])
+# D = 0.12232, p-value = 0.5175
+ksplot(bc_cap2$upstream[bc_cap2$Stratum1=="Beaver"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Beaver"],
+       main="Event 2 - Beaver", legend=c("All","Recaps"), col=c(1,4),
        xlab="Upstream Position (rkm)")
 
 par(mfrow=c(2,2))
-# ks.test(bc_cap1$upstream[bc_cap1$sample=="hike"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="hike"])
-# D = 0.11804, p-value = 0.2432
-ksplot(bc_cap1$upstream[bc_cap1$sample=="hike"], bc_cap1_recaps$upstream[bc_cap1_recaps$sample=="hike"],
-       main="Event 1 - hike", legend=c("All","Recaps"), col=c(1,2),
+# ks.test(bc_cap1$upstream[bc_cap1$Stratum1=="Nome"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Nome"])
+# D = 0.1425, p-value = 0.09111
+ksplot(bc_cap1$upstream[bc_cap1$Stratum1=="Nome"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Nome"],
+       main="Event 1 - Nome", legend=c("All","Recaps"), col=c(1,2),
        xlab="Upstream Position (rkm)")
 
-# ks.test(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="hike"])
-# D = 0.11701, p-value = 0.2823
-ksplot(bc_cap2$upstream[bc_cap2$sample=="hike"], bc_cap2_recaps$upstream[bc_cap2_recaps$sample=="hike"],
-       main="Event 2 - hike", legend=c("All","Recaps"), col=c(1,4),
+# ks.test(bc_cap2$upstream[bc_cap2$Stratum1=="Nome"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Nome"])
+# D = 0.11333, p-value = 0.3215
+ksplot(bc_cap2$upstream[bc_cap2$Stratum1=="Nome"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Nome"],
+       main="Event 2 - Nome", legend=c("All","Recaps"), col=c(1,4),
        xlab="Upstream Position (rkm)")
 ```
 
@@ -228,7 +241,7 @@ Since fairly equal numbers of recaptured fish were observed to move up- and down
 
 ## Abundance Estimation
 
-Abundance was estimated for each geographic stratum *t* (float vs. hike) using a Bailey estimator shown below:
+Abundance was estimated for each geographic stratum *t* (Beaver Creek vs. Nome Creek) using a Bailey estimator shown below:
 
 $$\hat{N}_t = \frac{n_{1,t}(n_{2,t}+1)}{m_{2,t}+1}$$
 
@@ -251,26 +264,53 @@ It should be noted that during the recapture event, one fish got away before its
 
 library(recapr)
 
-nhat <- NBailey(n1=n1, n2=n2, m2=m2) %>% 
+nhat_Stratum1 <- NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1) %>% 
   unname %>% round %>% formatC(format="d", big.mark=",")  # estimated abundance
 
-se_nhat <- seBailey(n1=n1, n2=n2, m2=m2) %>% 
+se_nhat_Stratum1 <- seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1) %>% 
   unname %>% round  %>% formatC(format="d", big.mark=",") # SE of estimated abundance
-# 
-# seBailey(n1=n1, n2=n2, m2=m2)/NBailey(n1=n1, n2=n2, m2=m2)   # CV of estimated abundance
-# 
-# ## both strata combined
-nhat_combined <- Nstrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey") %>% 
-  unname %>% round %>% formatC(format="d", big.mark=",")   # estimated abundance
-se_nhat_combined <- sestrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey") %>% 
-  unname %>% round %>% formatC(format="d", big.mark=",")  # SE of estimated abundance
-# 
-# sestrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey") /
-#   Nstrat(n1=n1, n2=n2, m2=m2, estimator = "Bailey")   # CV of estimated abundance
 
+
+nhat_combined_Stratum1 <- Nstrat(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1, 
+                                 estimator = "Bailey") %>% 
+  unname %>% round %>% formatC(format="d", big.mark=",")   # estimated abundance
+se_nhat_combined_Stratum1 <- sestrat(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1, 
+                                     estimator = "Bailey") %>% 
+  unname %>% round %>% formatC(format="d", big.mark=",")  # SE of estimated abundance
+
+
+nhat_Stratum2 <- NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)[c(2,3,1,4)] %>% 
+  # unname %>% 
+  round %>% formatC(format="d", big.mark=",")  # estimated abundance
+
+se_nhat_Stratum2 <- seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)[c(2,3,1,4)] %>% 
+  # unname %>% 
+  round  %>% formatC(format="d", big.mark=",") # SE of estimated abundance
+
+
+nhat_combined_Stratum2 <- Nstrat(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2, 
+                                 estimator = "Bailey") %>% 
+  unname %>% round %>% formatC(format="d", big.mark=",")   # estimated abundance
+se_nhat_combined_Stratum2 <- sestrat(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2, 
+                                     estimator = "Bailey") %>% 
+  unname %>% round %>% formatC(format="d", big.mark=",")  # SE of estimated abundance
 ```
 
-The abundance was estimated as `r nhat[1]` and `r nhat[2]` for the float and hike strata, respectively (SE `r se_nhat[1]` and `r se_nhat[2]`, respectively), and `r nhat_combined` (SE `r se_nhat_combined`) for the full study area.
+### Results - Beaver & Nome Creeks 
+
+The abundance was estimated as `r nhat_Stratum1[1]` and `r nhat_Stratum1[2]` for Beaver Creek and Nome Creek, respectively (SE `r se_nhat_Stratum1[1]` and `r se_nhat_Stratum1[2]`, respectively), and `r nhat_combined_Stratum1` (SE `r se_nhat_combined_Stratum1`) for the full study area.
+
+### Results - Finer stratification
+
+If the movement among strata is accepted and assumed negligible, the finer stratification of Nome Creek yields the following abundance estimates.  Of particular interest is the middle Nome Creek stratum, chosen to be a reach equivalent to the 2000 study:
+
+```{r}
+cbind(n1=formatC(unname(n1_Stratum2[c(2,3,1,4)]), format="d", big.mark=","),
+           n2=formatC(unname(n2_Stratum2[c(2,3,1,4)]), format="d", big.mark=","),
+           m2=unname(m2_Stratum2[c(2,3,1,4)]), 
+           Nhat = nhat_Stratum2, 
+           SE_Nhat = se_nhat_Stratum2) %>% knitr::kable()
+```
 
 ## Length Distribution
 
@@ -278,6 +318,10 @@ The abundance was estimated as `r nhat[1]` and `r nhat[2]` for the float and hik
 ######### ----------------- ASL estimates (length bins) ----------------- #########
 
 lengthbreaks <- c(250, 270, 300, 350, 400, 450) # c(250, 270, 300, 400)
+
+bc_all_justonce <- rbind(bc_cap1,
+                         subset(bc_cap2, Tag=="-"))
+
 lengthbreakcount <- ifelse(length(lengthbreaks)-1 <= 9, 
                            c("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")[length(lengthbreaks)-1],
                            length(lengthbreaks)-1)
@@ -287,11 +331,11 @@ lengthbinphrase <- paste(paste(lengthbinwords[-length(lengthbinwords)], collapse
       lengthbinwords[length(lengthbinwords)], sep=", and ")
 
 boilerplate <- capture.output(
-  ASL_boilerplate(stratum = as.numeric(as.factor(bc_all$sample)),
+  ASL_boilerplate(stratum = as.numeric(as.factor(bc_all$Stratum1)),
                 # length = bc_all$Length,
                 age = cut(bc_all$Length, lengthbreaks, right=FALSE),
-                Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2)),
-                se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))))
+                Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)),
+                se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))))
 
 # replacing "age" with "length"
 boilerplate_fix <- gsub(pattern=" age", replacement=" length", x=boilerplate)
@@ -314,11 +358,11 @@ The length composition was tabulated and stratified estimators were calculated a
 ```{r, results='asis'}
 digitvec <- c(0,3,3,0,0)
 
-ASL_table(stratum = as.numeric(as.factor(bc_all$sample)),
+ASL_table(stratum = as.numeric(as.factor(bc_all$Stratum1)),
           # length = bc_all$Length,
           age = cut(bc_all$Length, lengthbreaks, right=FALSE),
-          Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2)),
-          se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))) %>%
+          Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)),
+          se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))) %>%
   knitr::kable(digits=digitvec)
 ```
 
@@ -327,11 +371,11 @@ ASL_table(stratum = as.numeric(as.factor(bc_all$sample)),
 ```{r, results='asis'}
 
 # just using first event sample
-ASL_table(stratum = as.numeric(as.factor(bc_cap1$sample)),
+ASL_table(stratum = as.numeric(as.factor(bc_cap1$Stratum1)),
           # length = bc_cap1$Length,
           age = cut(bc_cap1$Length, lengthbreaks, right=FALSE),
-          Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2)),
-          se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))) %>%
+          Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)),
+          se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))) %>%
   knitr::kable(digits=digitvec)
 ```
 
@@ -340,38 +384,38 @@ ASL_table(stratum = as.numeric(as.factor(bc_cap1$sample)),
 ```{r, results='asis'}
 
 # just using second event sample
-ASL_table(stratum = as.numeric(as.factor(bc_cap2$sample)),
+ASL_table(stratum = as.numeric(as.factor(bc_cap2$Stratum1)),
           # length = bc_cap2$Length,
           age = cut(bc_cap2$Length, lengthbreaks, right=FALSE),
-          Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2)),
-          se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))) %>%
+          Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)),
+          se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))) %>%
   knitr::kable(digits=digitvec)
 ```
 
-### Float sample only
+### Beaver Creek only
 
 ```{r, results='asis'}
 
 # pooling both events, but separating by capture stratum
-with(subset(bc_all, sample == "float"),
+with(subset(bc_all, Stratum1 == "Beaver"),
      ASL_table(
        # length = Length,
        age = cut(Length, lengthbreaks, right=FALSE),
-       Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2))[1],
-       se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))[1])) %>%
+       Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))[1],
+       se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))[1])) %>%
   knitr::kable(digits=digitvec)
 ```
 
-### Hike sample only
+### Nome Creek only
 
 ```{r, results='asis'}
 
-with(subset(bc_all, sample == "hike"),
+with(subset(bc_all, Stratum1 == "Nome"),
      ASL_table(
        # length = Length,
        age = cut(Length, lengthbreaks, right=FALSE),
-       Nhat = as.numeric(NBailey(n1=n1, n2=n2, m2=m2))[2],
-       se_Nhat = as.numeric(seBailey(n1=n1, n2=n2, m2=m2))[2])) %>%
+       Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))[2],
+       se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))[2])) %>%
   knitr::kable(digits=digitvec)
 ```
 

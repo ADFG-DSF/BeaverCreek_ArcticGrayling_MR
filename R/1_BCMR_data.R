@@ -208,17 +208,6 @@ bc_all %>% mutate(Site=as.factor(Site)) %>%
            geom_point()
 
 
-# separating datasets for mark, recap, and both
-bc_cap1 <- filter(bc_all, event=="mark")
-bc_cap2 <- filter(bc_all, event=="recap")
-
-# tags observed in both
-recap_tags <- bc_cap1$Tag[!is.na(bc_cap1$Tag) & bc_cap1$Tag %in% bc_cap2$Tag]
-bc_cap1_recaps <- filter(bc_cap1, Tag %in% recap_tags)
-bc_cap2_recaps_justtags <- filter(bc_cap2, Tag %in% recap_tags)
-bc_cap2_recaps <- filter(bc_cap2, Tag %in% c(recap_tags, "Recap"))
-
-
 
 # overlaying float/hike samples on map and seeing where they fall
 par(mfrow=c(2,1))
@@ -226,7 +215,6 @@ zoomtoseg(c(17,5,7),beaver_cr_op)
 points(points_albers[bc_all$sample == "float",], pch=16)
 zoomtoseg(c(17,5,7),beaver_cr_op)
 points(points_albers[bc_all$sample == "hike",], pch=16)
-
 
 par(mfrow=c(2,2))
 zoomtoseg(c(17,5,7),beaver_cr_op, main="mark - float")
@@ -237,6 +225,56 @@ zoomtoseg(c(17,5,7),beaver_cr_op, main="recap - float")
 points(points_albers[bc_all$sample == "float" & bc_all$event == "recap",], pch=16)
 zoomtoseg(c(17,5,7),beaver_cr_op, main="recap - hike")
 points(points_albers[bc_all$sample == "hike" & bc_all$event == "recap",], pch=16)
+
+
+par(mfrow=c(1,1))
+plot(bc_river)
+table(bc_all$Site,bc_all$seg)
+
+bc_all$Stratum1 <- ifelse(bc_all$seg %in% 5:8, "Beaver", "Nome")
+bc_all$Stratum2 <- ifelse(bc_all$seg %in% 5:8, "Beaver",
+                          ifelse(bc_all$seg %in% 3:4 & bc_all$Longitude < -147.04525,
+                                 "Lower Nome",
+                                 ifelse(bc_all$seg %in% 3:4 & bc_all$Longitude >= -147.04525,
+                                        "2000 Study","Upper Nome")))
+riverpoints(seg=bc_all$seg, vert=bc_all$vert, rivers=bc_river,
+            col=1+as.numeric(as.factor(bc_all$Stratum2)))
+
+airstrip <- sf::sf_project(pts=matrix(c(-147.04525, 65.36523), ncol=2), to=AKalbers)
+points(airstrip, pch=16)
+airstrip_segvert <- xy2segvert(x=airstrip[,1], y=airstrip[,2], rivers=bc_river)
+airstrip_upstream <- mouthdist(seg=airstrip_segvert$seg, vert=airstrip_segvert$vert, rivers=bc_river)/1000
+
+table(bc_all$Site,bc_all$Stratum1)
+table(bc_all$Site,bc_all$Stratum2)
+table(bc_all$seg,bc_all$Stratum1)
+table(bc_all$seg,bc_all$Stratum2)
+
+
+
+####### These assignments were made in 2_BCMR_assumptions.R #######
+
+bc_all$Stratum1[bc_all$Tag == 515] <- "Beaver"
+
+bc_all$Stratum2[bc_all$Tag == 1358] <- "2000 Study"
+bc_all$Stratum2[bc_all$Tag == 515] <- "Beaver"
+bc_all$Stratum2[bc_all$Tag == 1378] <- "2000 Study"
+bc_all$Stratum2[bc_all$Tag == 751] <- "Upper Nome"
+
+###################################################################
+
+
+
+# separating datasets for mark, recap, and both
+bc_cap1 <- filter(bc_all, event=="mark")
+bc_cap2 <- filter(bc_all, event=="recap")
+
+# tags observed in both
+recap_tags <- bc_cap1$Tag[!is.na(bc_cap1$Tag) & bc_cap1$Tag %in% bc_cap2$Tag]
+bc_cap1_recaps <- filter(bc_cap1, Tag %in% recap_tags)
+bc_cap2_recaps_justtags <- filter(bc_cap2, Tag %in% recap_tags)
+bc_cap2_recaps <- filter(bc_cap2, Tag %in% c(recap_tags, "Recap"))
+
 
 ### MAKE SURE FINAL CALCS INCLUDE NON-NUMBERED FISH
 ### - Tag = "Recap"
