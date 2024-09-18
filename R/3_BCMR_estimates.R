@@ -52,26 +52,58 @@ m2_Stratum2 <- table(bc_cap2_recaps$Stratum2)  # this will work now
 
 library(recapr)
 
-NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)   # estimated abundance
-seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)  # SE of estimated abundance
+## estimates for Stratum1
+nhat_Stratum1_num <- NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)   # estimated abundance
+nhat_Stratum1 <- nhat_Stratum1_num %>%
+  # unname %>%
+  round %>%
+  formatC(format="d", big.mark=",")
+
+se_nhat_Stratum1_num <- seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)  # SE of estimated abundance
+se_nhat_Stratum1 <- se_nhat_Stratum1_num  %>%
+  # unname %>%
+  round %>%
+  formatC(format="d", big.mark=",")
 
 seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1) /
   NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)   # CV of estimated abundance
 
 
-NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)   # estimated abundance
-seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)  # SE of estimated abundance
+## estimates for Stratum2
+nhat_Stratum2_num <- NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)   # estimated abundance
+nhat_Stratum2 <- nhat_Stratum2_num %>%
+  # unname %>%
+  round %>%
+  formatC(format="d", big.mark=",")
+
+se_nhat_Stratum2_num <- seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)  # SE of estimated abundance
+se_nhat_Stratum2 <- se_nhat_Stratum2_num  %>%
+  # unname %>%
+  round %>%
+  formatC(format="d", big.mark=",")
 
 seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2) /
   NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)   # CV of estimated abundance
 
 
-## both strata combined
-Nstrat(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1, estimator = "Bailey")   # estimated abundance
-sestrat(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1, estimator = "Bailey")  # SE of estimated abundance
+## estimates for both strata combined
+nhat_combined_Stratum1_num <-
+  Nstrat(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1, estimator = "Bailey")   # estimated abundance
+nhat_combined_Stratum1 <- nhat_combined_Stratum1_num  %>%
+  # unname %>%
+  round %>%
+  formatC(format="d", big.mark=",")
+
+se_nhat_combined_Stratum1_num <-
+  sestrat(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1, estimator = "Bailey")  # SE of estimated abundance
+se_nhat_combined_Stratum1 <- se_nhat_combined_Stratum1_num  %>%
+  # unname %>%
+  round %>%
+  formatC(format="d", big.mark=",")
 
 sestrat(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1, estimator = "Bailey") /
   Nstrat(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1, estimator = "Bailey")   # CV of estimated abundance
+
 
 
 Nstrat(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2, estimator = "Bailey")   # estimated abundance
@@ -95,21 +127,24 @@ bc_all_justonce <- rbind(bc_cap1,
 lengthbreaks <- c(250, 270, 300, 350, 400, 450) # c(250, 270, 330, 400)
 
 # just using first event sample
-ASL_table(stratum = as.numeric(as.factor(bc_cap1$Stratum1)),
+ASL_firstevent <-
+  ASL_table(stratum = as.numeric(as.factor(bc_cap1$Stratum1)),
           # length = bc_cap1$Length,
           age = cut(bc_cap1$Length, lengthbreaks, right=FALSE),
           Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)),
           se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)))
 
 # just using second event sample
-ASL_table(stratum = as.numeric(as.factor(bc_cap2$Stratum1)),
+ASL_secondevent <-
+  ASL_table(stratum = as.numeric(as.factor(bc_cap2$Stratum1)),
           # length = bc_cap2$Length,
           age = cut(bc_cap2$Length, lengthbreaks, right=FALSE),
           Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)),
           se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)))
 
 # pooling both samples
-with(bc_all_justonce, # bc_all
+ASL_pooled <-
+  with(bc_all_justonce, # bc_all
      ASL_table(stratum = as.numeric(as.factor(Stratum1)),
                # length = bc_all$Length,
                age = cut(Length, lengthbreaks, right=FALSE),
@@ -118,40 +153,42 @@ with(bc_all_justonce, # bc_all
 
 
 
-# just using first event sample
-ASL_table(stratum = as.numeric(as.factor(bc_cap1$Stratum2)),
-          # length = bc_cap1$Length,
-          age = cut(bc_cap1$Length, lengthbreaks, right=FALSE),
-          Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)),
-          se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)))
-
-# just using second event sample
-ASL_table(stratum = as.numeric(as.factor(bc_cap2$Stratum2)),
-          # length = bc_cap2$Length,
-          age = cut(bc_cap2$Length, lengthbreaks, right=FALSE),
-          Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)),
-          se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)))
-
-# pooling both samples
-with(bc_all_justonce, # bc_all
-     ASL_table(stratum = as.numeric(as.factor(Stratum2)),
-               # length = bc_all$Length,
-               age = cut(Length, lengthbreaks, right=FALSE),
-               Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)),
-               se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))))
+# # just using first event sample
+# ASL_table(stratum = as.numeric(as.factor(bc_cap1$Stratum2)),
+#           # length = bc_cap1$Length,
+#           age = cut(bc_cap1$Length, lengthbreaks, right=FALSE),
+#           Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)),
+#           se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)))
+#
+# # just using second event sample
+# ASL_table(stratum = as.numeric(as.factor(bc_cap2$Stratum2)),
+#           # length = bc_cap2$Length,
+#           age = cut(bc_cap2$Length, lengthbreaks, right=FALSE),
+#           Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)),
+#           se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)))
+#
+# # pooling both samples
+# with(bc_all_justonce, # bc_all
+#      ASL_table(stratum = as.numeric(as.factor(Stratum2)),
+#                # length = bc_all$Length,
+#                age = cut(Length, lengthbreaks, right=FALSE),
+#                Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2)),
+#                se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))))
 
 
 
 
 # pooling both events, but separating by capture stratum
-with(subset(bc_all, Stratum1 == "Beaver"),
+ASL_Beaver <-
+  with(subset(bc_all_justonce, Stratum1 == "Beaver"),
      ASL_table(
        # length = Length,
        age = cut(Length, lengthbreaks, right=FALSE),
        Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))[1],
        se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))[1]))
 
-with(subset(bc_all, Stratum1 == "Nome"),
+ASL_Nome <-
+  with(subset(bc_all_justonce, Stratum1 == "Nome"),
      ASL_table(
        # length = Length,
        age = cut(Length, lengthbreaks, right=FALSE),
@@ -160,7 +197,8 @@ with(subset(bc_all, Stratum1 == "Nome"),
 
 
 
-with(subset(bc_all, Stratum2 == "2000 Study"),
+ASL_2000 <-
+  with(subset(bc_all_justonce, Stratum2 == "2000 Study"),
      ASL_table(
        # length = Length,
        age = cut(Length, lengthbreaks, right=FALSE),
@@ -173,26 +211,26 @@ with(subset(bc_all, Stratum2 == "2000 Study"),
 #   Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[1],
 #   se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[1])
 
-with(subset(bc_all, Stratum2 == "Beaver"),
-     ASL_table(
-       # length = Length,
-       age = cut(Length, lengthbreaks, right=FALSE),
-       Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[2],
-       se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[2]))
-
-with(subset(bc_all, Stratum2 == "Lower Nome"),
-     ASL_table(
-       # length = Length,
-       age = cut(Length, lengthbreaks, right=FALSE),
-       Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[3],
-       se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[3]))
-
-with(subset(bc_all, Stratum2 == "Upper Nome"),
-     ASL_table(
-       # length = Length,
-       age = cut(Length, lengthbreaks, right=FALSE),
-       Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[4],
-       se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[4]))
+# with(subset(bc_all_justonce, Stratum2 == "Beaver"),
+#      ASL_table(
+#        # length = Length,
+#        age = cut(Length, lengthbreaks, right=FALSE),
+#        Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[2],
+#        se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[2]))
+#
+# with(subset(bc_all_justonce, Stratum2 == "Lower Nome"),
+#      ASL_table(
+#        # length = Length,
+#        age = cut(Length, lengthbreaks, right=FALSE),
+#        Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[3],
+#        se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[3]))
+#
+# with(subset(bc_all_justonce, Stratum2 == "Upper Nome"),
+#      ASL_table(
+#        # length = Length,
+#        age = cut(Length, lengthbreaks, right=FALSE),
+#        Nhat = as.numeric(NBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[4],
+#        se_Nhat = as.numeric(seBailey(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2))[4]))
 
 
 
