@@ -251,6 +251,27 @@ table(bc_all$seg,bc_all$Stratum1)
 table(bc_all$seg,bc_all$Stratum2)
 
 
+###### making proto-versions of these data frames for tabulation
+# separating datasets for mark, recap, and both
+bc_cap1 <- filter(bc_all, event=="mark")
+bc_cap2 <- filter(bc_all, event=="recap")
+
+# tags observed in both
+recap_tags <- bc_cap1$Tag[!is.na(bc_cap1$Tag) & bc_cap1$Tag %in% bc_cap2$Tag]
+bc_cap1_recaps <- filter(bc_cap1, Tag %in% recap_tags)
+bc_cap2_recaps_justtags <- filter(bc_cap2, Tag %in% recap_tags)
+bc_cap2_recaps <- filter(bc_cap2, Tag %in% c(recap_tags, "Recap"))
+
+recaps <- data.frame(Tag = bc_cap1_recaps$Tag[order(bc_cap1_recaps$Tag)],
+                     Stratum1_cap1 = bc_cap1_recaps$Stratum1[order(bc_cap1_recaps$Tag)],
+                     Stratum1_cap2 = bc_cap2_recaps_justtags$Stratum1[order(bc_cap2_recaps_justtags$Tag)],
+                     Stratum2_cap1 = bc_cap1_recaps$Stratum2[order(bc_cap1_recaps$Tag)],
+                     Stratum2_cap2 = bc_cap2_recaps_justtags$Stratum2[order(bc_cap2_recaps_justtags$Tag)])
+
+problemtable1 <- table(Mark=recaps$Stratum1_cap1,
+                       Recap=recaps$Stratum1_cap2)  # one problem fish
+problemtable2 <- table(Mark=recaps$Stratum2_cap1,
+                       Recap=recaps$Stratum2_cap2)[c(2,3,1,4), c(2,3,1,4)]  # four problem fish
 
 ####### These assignments were made in 2_BCMR_assumptions.R #######
 

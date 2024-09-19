@@ -70,7 +70,7 @@ ksplot(x1=bc_cap2$Length, x2=bc_cap2_recaps$Length,
        xlab="Fork Length (mm)")
 ```
 
-However, after splitting the data by geographic stratum (Beaver Creek vs. Nome Creek), there is no longer any evidence of length selectivity, with results plotted below.
+However, after splitting the data by geographic stratum (Beaver Creek vs. Nome Creek), there is no longer any evidence of length selectivity for Beaver Creek, and only evidence of length selectivity in Nome Creek in the second event (KS test with Event 1 data).  Results are plotted below.
 
 It should be noted that one tagged fish (tag # 515) was tagged in Beaver Creek and recaptured in Nome Creek.  Since this fish was tagged 
 `r round(abs(42.80986 - bc_cap1_recaps$upstream[bc_cap1_recaps$Tag==515]), 2)`
@@ -113,9 +113,28 @@ ksplot(bc_cap2$Length[bc_cap2$Stratum1=="Nome"],
        xlab="Fork Length (mm)")
 ```
 
+It was also of interest to estimate abundance and length composition for the stretch of river comparable to the 2000 study, discussed further.  There was no evidence of length selectivity in this stratum, for either capture event.
+
+```{r}
+par(mfrow=c(2,2))
+# ks.test(bc_cap1$Length[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum2=="2000 Study"])
+# D = 0.15153, p-value = 0.1002
+ksplot(bc_cap1$Length[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$Length[bc_cap1_recaps$Stratum2=="2000 Study"],
+       main="Event 1 - 2000 Study", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Fork Length (mm)")
+
+# ks.test(bc_cap2$Length[bc_cap2$Stratum2=="2000 Study"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum2=="2000 Study"])
+# D = 0.14634, p-value = 0.1611
+ksplot(bc_cap2$Length[bc_cap2$Stratum2=="2000 Study"], bc_cap2_recaps$Length[bc_cap2_recaps$Stratum2=="2000 Study"],
+       main="Event 2 - 2000 Study", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Fork Length (mm)")
+```
+
+\pagebreak
+
 ### Spatial Selectivity
 
-Spatial selectivity was similarly evaluated using KS tests, in these cases testing the upriver position (distance in rkm from the lowest point in the study area) of the full samples in each event versus the subset of recaptured fish.  Results are plotted below.  Similarly, testing showed strong evidence of spatial selectivity when pooling the Beaver Creek sample together with the Nome Creek sample; however, there is no evidence of spatial selectivity when the two samples are considered separately.
+Spatial selectivity was similarly evaluated using KS tests, in these cases testing the upriver position (distance in rkm from the lowest point in the study area) of the full samples in each event versus the subset of recaptured fish.  Results are plotted below.  Similarly, testing showed strong evidence of spatial selectivity when pooling the Beaver Creek sample together with the Nome Creek sample; however, there was no evidence of spatial selectivity when the two samples were considered separately.
 
 ```{r}
 ## -------------- spatial selectivity? ---------------- ##
@@ -167,6 +186,25 @@ ksplot(bc_cap1$upstream[bc_cap1$Stratum1=="Nome"], bc_cap1_recaps$upstream[bc_ca
 # D = 0.11333, p-value = 0.3215
 ksplot(bc_cap2$upstream[bc_cap2$Stratum1=="Nome"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Nome"],
        main="Event 2 - Nome", legend=c("All","Recaps"), col=c(1,4),
+       xlab="Upstream Position (rkm)")
+```
+
+
+
+It was also of interest to estimate abundance and length composition for the stretch of river comparable to the 2000 study, discussed further.  There was no evidence of spatial selectivity in this stratum for either capture event.
+
+```{r}
+par(mfrow=c(2,2))
+# ks.test(bc_cap1$upstream[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum2=="2000 Study"])
+# D = 0.13215, p-value = 0.205
+ksplot(bc_cap1$upstream[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum2=="2000 Study"],
+       main="Event 1 - 2000 Study", legend=c("All","Recaps"), col=c(1,2),
+       xlab="Upstream Position (rkm)")
+
+# ks.test(bc_cap2$upstream[bc_cap2$Stratum2=="2000 Study"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum2=="2000 Study"])
+# D = 0.072168, p-value = 0.919
+ksplot(bc_cap2$upstream[bc_cap2$Stratum2=="2000 Study"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum2=="2000 Study"],
+       main="Event 2 - 2000 Study", legend=c("All","Recaps"), col=c(1,4),
        xlab="Upstream Position (rkm)")
 ```
 
@@ -238,11 +276,11 @@ prop_table <- count_table/nrow(bc_cap1)
 
 ```
 
-Since fairly equal numbers of recaptured fish were observed to move up- and downstream, it seems reasonable to assume that an approximately equal degree of movement occurs in and out of the study area at the endpoints and at the confluences of tributary streams, and between the river reaches subject to sampling via floating or hiking.  It is therefore reasonable to assume that any change in abundance in the population of inference (i.e. immigration or emigration) is negligible.  However, the potential does exist that marked fish may have left the study area between events, thus imparting some small bias.  This was investigated by approximating the movement of tagged fish by resampling the differences in observed position with replacement 10,000 times and adding them to the upriver positions observed in the mark event.  In this simulation, a negligible mean proportion (`r round(100*colMeans(prop_table)[4], 2)`%) of tagged fish had an ending positions above the top end of the study area, and a small mean proportion (`r round(100*colMeans(prop_table)[1], 2)`%) had an ending position below the bottom end.  It may be worth accounting for the bias this would impart, but it is likely that the bias would be small.
+Since fairly equal numbers of recaptured fish were observed to move up- and downstream, it seems reasonable to assume that an approximately equal degree of movement occurs in and out of the study area at the endpoints and at the confluences of tributary streams, and between the spatial strata (e.g. Beaver vs Nome Creeks).  It is therefore reasonable to assume that any change in abundance in the population of inference (i.e. immigration or emigration) is negligible.  However, the potential does exist that marked fish may have left the study area between events, thus imparting some small bias.  This was investigated by approximating the movement of tagged fish by resampling the differences in observed position with replacement 10,000 times and adding them to the upriver positions observed in the mark event.  In this simulation, a negligible mean proportion (`r round(100*colMeans(prop_table)[4], 2)`%) of tagged fish had an ending positions above the top end of the study area, and a small mean proportion (`r round(100*colMeans(prop_table)[1], 2)`%) had an ending position below the bottom end.  It may be worth accounting for the bias this would impart, but it is likely that the bias would be small.
 
 ## Abundance Estimation
 
-Abundance was estimated for each geographic stratum *t* (Beaver Creek vs. Nome Creek) using a Bailey estimator shown below:
+Abundance was estimated for each geographic stratum *t* (e.g. Beaver Creek vs. Nome Creek) using a Bailey estimator shown below:
 
 $$\hat{N}_t = \frac{n_{1,t}(n_{2,t}+1)}{m_{2,t}+1}$$
 
@@ -252,11 +290,11 @@ $$\hat{V}(\hat{N}_t) =  \frac{n_{1,t}^2(n_{2,t}+1)(n_{2,t}-m_{2,t})}{(m_{2,t}+1)
 
 The abundances and associated variances estimated for each stratum were summed for the purpose of combined estimates:
 
-$$\hat{N} = \hat{N}_{float} + \hat{N}_{hike}$$
+$$\hat{N} = \hat{N}_{Beaver} + \hat{N}_{Nome}$$
 
 and
 
-$$\hat{V}(\hat{N}) = \hat{V}(\hat{N}_{float}) + \hat{V}(\hat{N}_{hike})$$
+$$\hat{V}(\hat{N}) = \hat{V}(\hat{N}_{Beaver}) + \hat{V}(\hat{N}_{Nome})$$
 
 It should be noted that during the recapture event, one fish got away before its tag number was recorded, and one fish had no tag but did have a fin clip, indicating capture.  Both were recorded as recaptures.
 
@@ -303,7 +341,19 @@ The abundance was estimated as `r unname(nhat_Stratum1["Beaver"])` and `r unname
 
 ### Results - Finer stratification
 
-If the movement among strata is accepted and assumed negligible, the finer stratification of Nome Creek yields the following abundance estimates.  Of particular interest is the middle Nome Creek stratum, chosen to be a reach equivalent to the 2000 study:
+Also of interest was the reach corresponding to the 2000 study, defined as the stretch of Nome Creek between the airstrip and the confluence with Moose Creek.  To that end, the Nome Creek stratum was further subdivided into Lower, Middle (2000 Study), and Upper strata.  In addition to the one fish (Tag # 515) observed to travel between Nome Creek and Beaver Creek, three additional fish were observed to move between strata of Nome Creek, as tabulated below:
+
+```{r}
+# problemtable1
+```
+
+```{r}
+problemtable2 
+```
+
+All three fish were located near the stratum boundary during one event and substantially further from the boundary in the other event.  In all cases, recaptured fish were assigned to the spatial stratum reflecting the largest movement from the boundary.
+
+If the movement among strata is accepted and assumed negligible, the finer stratification of Nome Creek yields the following abundance estimates.  
 
 ```{r}
 thenames <- c("Beaver", "Lower Nome", "2000 Study", "Upper Nome")
@@ -353,25 +403,13 @@ cat(boilerplate_uptoref, sep="\n")
 The length composition of Arctic grayling was described by considering lengths in 
 `r lengthbreakcount` categories: `r lengthbinphrase` mm FL.
 
-The length composition was tabulated and stratified estimators were calculated as appropriate for the following cases:
+The length composition was tabulated and stratified estimators were calculated as appropriate for the following cases.  For cases in which length measurements from both events (i.e. marking and recapture) were used, recaptured fish (that is, present in both the marking and recapture events) were only incorporated once.
 
-### Both sampling events (pooled)
+### Full study area (stratified) - just using Event 1 data
 
 ```{r, results='asis'}
+
 digitvec <- c(0,3,3,0,0)
-
-# ASL_table(stratum = as.numeric(as.factor(bc_all$Stratum1)),
-#           # length = bc_all$Length,
-#           age = cut(bc_all$Length, lengthbreaks, right=FALSE),
-#           Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)),
-#           se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))) %>%
-#   knitr::kable(digits=digitvec)
-ASL_pooled %>% knitr::kable(digits=digitvec)
-```
-
-### Mark event only
-
-```{r, results='asis'}
 
 # just using first event sample
 # ASL_table(stratum = as.numeric(as.factor(bc_cap1$Stratum1)),
@@ -383,21 +421,7 @@ ASL_pooled %>% knitr::kable(digits=digitvec)
 ASL_firstevent %>% knitr::kable(digits=digitvec)
 ```
 
-### Recapture event only
-
-```{r, results='asis'}
-
-# just using second event sample
-# ASL_table(stratum = as.numeric(as.factor(bc_cap2$Stratum1)),
-#           # length = bc_cap2$Length,
-#           age = cut(bc_cap2$Length, lengthbreaks, right=FALSE),
-#           Nhat = as.numeric(NBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1)),
-#           se_Nhat = as.numeric(seBailey(n1=n1_Stratum1, n2=n2_Stratum1, m2=m2_Stratum1))) %>%
-#   knitr::kable(digits=digitvec)
-ASL_secondevent %>% knitr::kable(digits=digitvec)
-```
-
-### Beaver Creek only
+### Beaver Creek only - using both events
 
 ```{r, results='asis'}
 
@@ -412,7 +436,7 @@ ASL_secondevent %>% knitr::kable(digits=digitvec)
 ASL_Beaver %>% knitr::kable(digits=digitvec)
 ```
 
-### Nome Creek only
+### Nome Creek only - just using Event 1 data
 
 ```{r, results='asis'}
 
@@ -426,7 +450,7 @@ ASL_Beaver %>% knitr::kable(digits=digitvec)
 ASL_Nome %>% knitr::kable(digits=digitvec)
 ```
 
-### 2000 Study Area only
+### 2000 Study Area only - using both events
 
 ```{r, results='asis'}
 
