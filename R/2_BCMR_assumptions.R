@@ -306,6 +306,58 @@ ksplot(bc_cap2$upstream[bc_cap2$Stratum2=="Upper Nome"], bc_cap2_recaps$upstream
        xlab="Upstream Position (rkm)")
 
 
+## confirming this with our standard chi^2 tests
+library(recapr)  # for automated consistency tests
+
+with(subset(bc_all, event=="mark"),
+     table(cut(Site, breaks=c(0,15,23,28,32,35,42))))
+
+chisq_strat <- rep(NA, nrow(bc_all))
+chisq_strat[bc_all$seg==7 | bc_all$seg==8] <- 1
+chisq_strat[bc_all$seg==5 | bc_all$seg==6| bc_all$seg==4] <- 2
+chisq_strat[bc_all$Stratum2=="Lower Nome"] <- 3
+chisq_strat[bc_all$Stratum2=="2000 Study"] <- 4
+chisq_strat[bc_all$Stratum2=="Upper Nome"] <- 5
+
+table(chisq_strat)
+n1 <- table(chisq_strat[bc_all$event=="mark"])
+n2 <- table(chisq_strat[bc_all$event=="recap"])
+
+recap_tags <- bc_cap1_recaps$Tag
+m2strata1 <- chisq_strat[bc_all$Tag %in% recap_tags & bc_all$event=="mark"][order(bc_all$Tag[bc_all$Tag %in% recap_tags & bc_all$event=="mark"])]
+m2strata2 <- chisq_strat[bc_all$Tag %in% recap_tags & bc_all$event=="recap"][order(bc_all$Tag[bc_all$Tag %in% recap_tags & bc_all$event=="recap"])]
+
+consistencytest(n1=n1, n2=n2, m2strata1=m2strata1, m2strata2 = m2strata2)
+
+with(bc_all, {
+  n1 <- table(chisq_strat[event=="mark"])
+  n2 <- table(chisq_strat[event=="recap"])
+
+  m2strata1 <- chisq_strat[Tag %in% recap_tags & event=="mark"][order(Tag[Tag %in% recap_tags & event=="mark"])]
+  m2strata2 <- chisq_strat[Tag %in% recap_tags & event=="recap"][order(Tag[Tag %in% recap_tags & event=="recap"])]
+
+  consistencytest(n1=n1, n2=n2, m2strata1=m2strata1, m2strata2 = m2strata2)
+})  # tests are not satisfied
+
+bc_all$chisq_strat <- chisq_strat
+with(subset(bc_all, Stratum1=="Beaver"), {
+  n1 <- table(chisq_strat[event=="mark"])
+  n2 <- table(chisq_strat[event=="recap"])
+
+  m2strata1 <- chisq_strat[Tag %in% recap_tags & event=="mark"][order(Tag[Tag %in% recap_tags & event=="mark"])]
+  m2strata2 <- chisq_strat[Tag %in% recap_tags & event=="recap"][order(Tag[Tag %in% recap_tags & event=="recap"])]
+
+  consistencytest(n1=n1, n2=n2, m2strata1=m2strata1, m2strata2 = m2strata2)
+}) # tests 2 and 3 are satisfied
+with(subset(bc_all, Stratum1=="Nome"), {
+  n1 <- table(chisq_strat[event=="mark"])
+  n2 <- table(chisq_strat[event=="recap"])
+
+  m2strata1 <- chisq_strat[Tag %in% recap_tags & event=="mark"][order(Tag[Tag %in% recap_tags & event=="mark"])] %>% as.factor %>% as.numeric
+  m2strata2 <- chisq_strat[Tag %in% recap_tags & event=="recap"][order(Tag[Tag %in% recap_tags & event=="recap"])]  %>% as.factor %>% as.numeric
+
+  consistencytest(n1=n1, n2=n2, m2strata1=m2strata1, m2strata2 = m2strata2)
+}) # test 3 is satisfied
 
 
 ## checking to see if there is still length selectivity detected after stratifying by sample
