@@ -307,6 +307,7 @@ ksplot(bc_cap2$upstream[bc_cap2$Stratum2=="Upper Nome"], bc_cap2_recaps$upstream
 
 
 ## confirming this with our standard chi^2 tests
+## first using Stratum2 (effectively)
 library(recapr)  # for automated consistency tests
 
 with(subset(bc_all, event=="mark"),
@@ -358,6 +359,71 @@ with(subset(bc_all, Stratum1=="Nome"), {
 
   consistencytest(n1=n1, n2=n2, m2strata1=m2strata1, m2strata2 = m2strata2)
 }) # test 3 is satisfied
+
+
+## trying the same tests (2 and 3 anyway) by hand, with different breakpoints
+range(bc_all$upstream)
+range(bc_all$upstream[bc_all$Stratum1=="Beaver"])
+range(bc_all$upstream[bc_all$Stratum1=="Nome"])
+range(bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Beaver"])
+range(bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Nome"])
+range(bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Beaver"])
+range(bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Nome"])
+
+par(mfrow=c(2,2))
+beaverbreak <- seq(2, 40)
+beaverpval <- minn <- NA*beaverbreak
+for(i in seq_along(beaverbreak)) {
+  row2 <- table(cut(bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Beaver"], breaks=c(0, beaverbreak[i], 100)))
+  row1 <- table(cut(bc_cap1$upstream[bc_cap1$Stratum1=="Beaver"], breaks=c(0, beaverbreak[i], 100))) - row2
+  minn[i] <- min(rbind(row1,row2))
+  beaverpval[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
+}
+plot(beaverbreak, beaverpval, type="b", log="y", main="Beaver Event 1")
+abline(h=.05)
+plot(minn, beaverpval, type="b", log="y", main="Beaver Event 1")
+abline(h=.05)
+abline(v=10)   # this case is completely fine
+
+beaverpval <- minn <- NA*beaverbreak
+for(i in seq_along(beaverbreak)) {
+  row2 <- table(cut(bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Beaver"], breaks=c(0, beaverbreak[i], 100)))
+  row1 <- table(cut(bc_cap2$upstream[bc_cap2$Stratum1=="Beaver"], breaks=c(0, beaverbreak[i], 100))) - row2
+  minn[i] <- min(rbind(row1,row2))
+  beaverpval[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
+}
+plot(beaverbreak, beaverpval, type="b", log="y", main="Beaver Event 2")
+abline(h=.05)
+plot(minn, beaverpval, type="b", log="y", main="Beaver Event 2")
+abline(h=.05)
+abline(v=10)  # small pvals only come about with small sample sizes - probably fine
+
+nomebreak <- seq(50, 76)
+nomepval <- minn <- NA*nomebreak
+for(i in seq_along(nomebreak)) {
+  row2 <- table(cut(bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Nome"], breaks=c(0, nomebreak[i], 100)))
+  row1 <- table(cut(bc_cap1$upstream[bc_cap1$Stratum1=="Nome"], breaks=c(0, nomebreak[i], 100))) - row2
+  minn[i] <- min(rbind(row1,row2))
+  nomepval[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
+}
+plot(nomebreak, nomepval, type="b", log="y", main="Nome Event 1")
+abline(h=.05)
+plot(minn, nomepval, type="b", log="y", main="Nome Event 1")
+abline(h=.05)
+abline(v=10)  # this one is problematic, but it's the same stratum/event that was problematic with size comp
+
+nomepval <- minn <- NA*nomebreak
+for(i in seq_along(nomebreak)) {
+  row2 <- table(cut(bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Nome"], breaks=c(0, nomebreak[i], 100)))
+  row1 <- table(cut(bc_cap2$upstream[bc_cap2$Stratum1=="Nome"], breaks=c(0, nomebreak[i], 100))) - row2
+  minn[i] <- min(rbind(row1,row2))
+  nomepval[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
+}
+plot(nomebreak, nomepval, type="b", log="y", main="Nome Event 2")
+abline(h=.05)
+plot(minn, nomepval, type="b", log="y", main="Nome Event 2")
+abline(h=.05)
+abline(v=10)  # small pvals only come about with small sample sizes - probably fine
 
 
 ## checking to see if there is still length selectivity detected after stratifying by sample
