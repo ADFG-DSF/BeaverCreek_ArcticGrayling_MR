@@ -134,6 +134,8 @@ ksplot(bc_cap2$Length[bc_cap2$Stratum2=="2000 Study"], bc_cap2_recaps$Length[bc_
 
 ### Spatial Selectivity
 
+#### KS tests
+
 Spatial selectivity was similarly evaluated using KS tests, in these cases testing the upriver position (distance in rkm from the lowest point in the study area) of the full samples in each event versus the subset of recaptured fish.  Results are plotted below.  Similarly, testing showed strong evidence of spatial selectivity when pooling the Beaver Creek sample together with the Nome Creek sample; however, there was no evidence of spatial selectivity when the two samples were considered separately.
 
 ```{r}
@@ -189,9 +191,11 @@ ksplot(bc_cap2$upstream[bc_cap2$Stratum1=="Nome"], bc_cap2_recaps$upstream[bc_ca
        xlab="Upstream Position (rkm)")
 ```
 
+#### $\chi^2$ tests
+
 Consistency tests ($\chi^2$), while more sensitive to detecting selectivity, confirm these results, with output as shown below.  It should be noted that spatial strata for Beaver Creek are broken by the confluence with Brigham Creek, and the spatial strata for Nome Creek are broken by the lower and upper endpoints of the stretch comparable to the 2000 study, discussed further.
 
-**Full Study Area - No tests satisfied**
+**Full Study Area (all data pooled) - No tests satisfied**
 
 ```{r}
 library(recapr)  # for automated consistency tests
@@ -205,6 +209,9 @@ chisq_strat[bc_all$seg==5 | bc_all$seg==6| bc_all$seg==4] <- 2
 chisq_strat[bc_all$Stratum2=="Lower Nome"] <- 3
 chisq_strat[bc_all$Stratum2=="2000 Study"] <- 4
 chisq_strat[bc_all$Stratum2=="Upper Nome"] <- 5
+
+bc_all$chisq_strat2000 <- ifelse(bc_all$upstream <= 57, 1,
+                          ifelse(bc_all$upstream > 62, 3, 2))
 
 # table(chisq_strat)
 n1 <- table(chisq_strat[bc_all$event=="mark"])
@@ -257,10 +264,13 @@ with(subset(bc_all, Stratum1=="Nome"), {
 }) # test 3 is satisfied
 ```
 
+#### 2000 Study Area - KS tests
+
 It was also of interest to estimate abundance and length composition for the stretch of river comparable to the 2000 study, discussed further.  There was no evidence of spatial selectivity in this stratum for either capture event.
 
 ```{r}
 par(mfrow=c(2,2))
+par(family="serif")
 # ks.test(bc_cap1$upstream[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum2=="2000 Study"])
 # D = 0.13215, p-value = 0.205
 ksplot(bc_cap1$upstream[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum2=="2000 Study"],
@@ -272,6 +282,22 @@ ksplot(bc_cap1$upstream[bc_cap1$Stratum2=="2000 Study"], bc_cap1_recaps$upstream
 ksplot(bc_cap2$upstream[bc_cap2$Stratum2=="2000 Study"], bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum2=="2000 Study"],
        main="Event 2 - 2000 Study", legend=c("All","Recaps"), col=c(1,4),
        xlab="Upstream Position (rkm)")
+```
+
+#### 2000 Study Area - $\chi^2$ tests
+
+**Test 2 satisfied**
+
+```{r}
+with(subset(bc_all, Stratum2=="2000 Study"), {
+  n1 <- table(chisq_strat2000[event=="mark"])
+  n2 <- table(chisq_strat2000[event=="recap"])
+
+  m2strata1 <- chisq_strat2000[Tag %in% recap_tags & event=="mark"][order(Tag[Tag %in% recap_tags & event=="mark"])] %>% as.factor %>% as.numeric
+  m2strata2 <- chisq_strat2000[Tag %in% recap_tags & event=="recap"][order(Tag[Tag %in% recap_tags & event=="recap"])]  %>% as.factor %>% as.numeric
+
+  consistencytest(n1=n1, n2=n2, m2strata1=m2strata1, m2strata2 = m2strata2)
+}) # test 3 is satisfied
 ```
 
 ### Growth Recruitment
@@ -470,6 +496,8 @@ The length composition of Arctic grayling was described by considering lengths i
 `r lengthbreakcount` categories: `r lengthbinphrase` mm FL.
 
 The length composition was tabulated and stratified estimators were calculated as appropriate for the following cases.  For cases in which length measurements from both events (i.e. marking and recapture) were used, recaptured fish (that is, present in both the marking and recapture events) were only incorporated once.
+
+\pagebreak
 
 ### Full study area (stratified) - just using Event 1 data
 

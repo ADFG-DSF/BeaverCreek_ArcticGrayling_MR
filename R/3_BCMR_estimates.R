@@ -124,7 +124,7 @@ sestrat(n1=n1_Stratum2, n2=n2_Stratum2, m2=m2_Stratum2, estimator = "Bailey") /
 bc_all_justonce <- rbind(bc_cap1,
                          subset(bc_cap2, Tag=="-"))
 
-lengthbreaks <- c(250, 270, 300, 350, 400, 450) # c(250, 270, 330, 400)
+lengthbreaks <- c(250, 270, 300, 350, 450) # c(250, 270, 300, 350, 400, 450) # c(250, 270, 330, 400)
 
 # Full study area - just using first event sample
 ASL_firstevent <-

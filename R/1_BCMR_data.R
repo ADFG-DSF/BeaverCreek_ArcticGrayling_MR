@@ -4,6 +4,11 @@
 ## in subsequent scripts.
 
 
+
+# whether to export the principal dataframe (bc_all) to an external file
+write_output <- FALSE
+
+
 library(tidyverse)  # for data manipulation
 library(riverdist)  # for spatial stuff with the river network
 library(dsftools)   # for some data manipulation stuff and ASL summaries
@@ -295,6 +300,14 @@ recap_tags <- bc_cap1$Tag[!is.na(bc_cap1$Tag) & bc_cap1$Tag %in% bc_cap2$Tag]
 bc_cap1_recaps <- filter(bc_cap1, Tag %in% recap_tags)
 bc_cap2_recaps_justtags <- filter(bc_cap2, Tag %in% recap_tags)
 bc_cap2_recaps <- filter(bc_cap2, Tag %in% c(recap_tags, "Recap"))
+
+
+
+if(write_output) {
+  # bc_all %>%
+  # select %>%   # reordering columns
+  # write.csv
+}
 
 
 ### MAKE SURE FINAL CALCS INCLUDE NON-NUMBERED FISH
