@@ -304,9 +304,10 @@ bc_cap2_recaps <- filter(bc_cap2, Tag %in% c(recap_tags, "Recap"))
 
 
 if(write_output) {
-  # bc_all %>%
-  # select %>%   # reordering columns
-  # write.csv
+  bc_all %>%
+  select(c("Fish", "Tag","event", "sample", "Length",  "Stratum1", "Stratum2",
+           "Site", "Latitude", "Longitude", "seg", "vert", "upstream","Comments")) %>% # head   # reordering columns
+  write.csv(file="R_output/BCMR_alldata.csv")
 }
 
 
