@@ -322,6 +322,9 @@ up1 <- bc_cap1_recaps$upstream[order(bc_cap1_recaps$Tag)]
 up2 <- bc_cap2_recaps_justtags$upstream[order(bc_cap2_recaps_justtags$Tag)]
 diffs <- up2-up1
 
+# data.frame(tag = bc_cap1_recaps$Tag[order(bc_cap1_recaps$Tag)],
+#            upstream1 = up1, upstream2 = up2, upstream_diff = diffs) %>%
+#   write.csv("R_output/upstream_diffs.csv")
 ```
 
 Movement of marked fish may be approximately inferred from movement observed in recaptured fish. Movement is illustrated below, with upriver position (distance in rkm from the lowest point in the study area) expressed on the respective x-axes, with movement between events expressed on the y-axes.  As is evident from both figures, the majority of recaptured fish did not travel any appreciable distance, with only `r round(100*mean(abs(diffs)>.5))`% of fish observed to travel more than 0.5 rkm. Additionally, those that did move did not travel far in comparison to the size of the study area, and relatively few fish were observed near the endpoints of the study area.
