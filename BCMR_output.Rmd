@@ -193,7 +193,7 @@ ksplot(bc_cap2$upstream[bc_cap2$Stratum1=="Nome"], bc_cap2_recaps$upstream[bc_ca
 
 #### $\chi^2$ tests
 
-Consistency tests ($\chi^2$), while more sensitive to detecting selectivity, confirm these results, with output as shown below.  It should be noted that spatial strata for Beaver Creek are broken by the confluence with Brigham Creek, and the spatial strata for Nome Creek are broken by the lower and upper endpoints of the stretch comparable to the 2000 study, discussed further.
+Consistency tests ($\chi^2$), while more sensitive to detecting selectivity, confirm these results, with output as shown below.  It should be noted that spatial strata for Beaver Creek are broken by the confluence with Trail Creek, and the spatial strata for Nome Creek are broken by the lower and upper endpoints of the stretch comparable to the 2000 study, discussed further.
 
 **Full Study Area (all data pooled) - No tests satisfied**
 
