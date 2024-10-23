@@ -372,59 +372,68 @@ range(bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Nome"])
 
 par(mfrow=c(2,2))
 beaverbreak <- seq(2, 40)
-beaverpval <- minn <- NA*beaverbreak
+beaverpval1 <- minn1 <- NA*beaverbreak
 for(i in seq_along(beaverbreak)) {
   row2 <- table(cut(bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Beaver"], breaks=c(0, beaverbreak[i], 100)))
   row1 <- table(cut(bc_cap1$upstream[bc_cap1$Stratum1=="Beaver"], breaks=c(0, beaverbreak[i], 100))) - row2
-  minn[i] <- min(rbind(row1,row2))
-  beaverpval[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
+  minn1[i] <- min(rbind(row1,row2))
+  beaverpval1[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
 }
-plot(beaverbreak, beaverpval, type="b", log="y", main="Beaver Event 1")
+plot(beaverbreak, beaverpval1, type="b", log="y", main="Beaver Event 1")
 abline(h=.05)
-plot(minn, beaverpval, type="b", log="y", main="Beaver Event 1")
+plot(minn1, beaverpval1, type="b", log="y", main="Beaver Event 1")
 abline(h=.05)
 abline(v=10)   # this case is completely fine
 
-beaverpval <- minn <- NA*beaverbreak
+beaverpval2 <- minn2 <- NA*beaverbreak
 for(i in seq_along(beaverbreak)) {
   row2 <- table(cut(bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Beaver"], breaks=c(0, beaverbreak[i], 100)))
   row1 <- table(cut(bc_cap2$upstream[bc_cap2$Stratum1=="Beaver"], breaks=c(0, beaverbreak[i], 100))) - row2
-  minn[i] <- min(rbind(row1,row2))
-  beaverpval[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
+  minn2[i] <- min(rbind(row1,row2))
+  beaverpval2[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
 }
-plot(beaverbreak, beaverpval, type="b", log="y", main="Beaver Event 2")
+plot(beaverbreak, beaverpval2, type="b", log="y", main="Beaver Event 2")
 abline(h=.05)
-plot(minn, beaverpval, type="b", log="y", main="Beaver Event 2")
+plot(minn2, beaverpval2, type="b", log="y", main="Beaver Event 2")
 abline(h=.05)
 abline(v=10)  # small pvals only come about with small sample sizes - probably fine
 
 nomebreak <- seq(50, 76)
-nomepval <- minn <- NA*nomebreak
+nomepval1 <- minn1 <- NA*nomebreak
 for(i in seq_along(nomebreak)) {
   row2 <- table(cut(bc_cap1_recaps$upstream[bc_cap1_recaps$Stratum1=="Nome"], breaks=c(0, nomebreak[i], 100)))
   row1 <- table(cut(bc_cap1$upstream[bc_cap1$Stratum1=="Nome"], breaks=c(0, nomebreak[i], 100))) - row2
-  minn[i] <- min(rbind(row1,row2))
-  nomepval[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
+  minn1[i] <- min(rbind(row1,row2))
+  nomepval1[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
 }
-plot(nomebreak, nomepval, type="b", log="y", main="Nome Event 1")
+plot(nomebreak, nomepval1, type="b", log="y", main="Nome Event 1")
 abline(h=.05)
-plot(minn, nomepval, type="b", log="y", main="Nome Event 1")
+plot(minn1, nomepval1, type="b", log="y", main="Nome Event 1")
 abline(h=.05)
 abline(v=10)  # this one is problematic, but it's the same stratum/event that was problematic with size comp
 
-nomepval <- minn <- NA*nomebreak
+nomepval2 <- minn2 <- NA*nomebreak
 for(i in seq_along(nomebreak)) {
   row2 <- table(cut(bc_cap2_recaps$upstream[bc_cap2_recaps$Stratum1=="Nome"], breaks=c(0, nomebreak[i], 100)))
   row1 <- table(cut(bc_cap2$upstream[bc_cap2$Stratum1=="Nome"], breaks=c(0, nomebreak[i], 100))) - row2
-  minn[i] <- min(rbind(row1,row2))
-  nomepval[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
+  minn2[i] <- min(rbind(row1,row2))
+  nomepval2[i] <- suppressWarnings(chisq.test(rbind(row1,row2))$p.value)
 }
-plot(nomebreak, nomepval, type="b", log="y", main="Nome Event 2")
+plot(nomebreak, nomepval2, type="b", log="y", main="Nome Event 2")
 abline(h=.05)
-plot(minn, nomepval, type="b", log="y", main="Nome Event 2")
+plot(minn2, nomepval2, type="b", log="y", main="Nome Event 2")
 abline(h=.05)
 abline(v=10)  # small pvals only come about with small sample sizes - probably fine
 
+
+## looking to see if there is a break in which neither test is satisfied - ALL IS GOOD!!
+plot(beaverpval1, beaverpval2, log="xy", type="b")
+abline(h=0.05)
+abline(v=0.05)
+
+plot(nomepval1, nomepval2, log="xy", type="b")
+abline(h=0.05)
+abline(v=0.05)
 
 ## checking to see if there is still length selectivity detected after stratifying by sample
 ### THIS ACCOUNTS FOR MUCH OF THE LENGTH SELECTIVITY!!!
